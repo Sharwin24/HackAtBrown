@@ -7,9 +7,14 @@ import json
 
 #embedding repo per file
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
+# Move the model to the selected device
 
 # Initialize the embedder
 embedder = Embedder("microsoft/codebert-base")
+embedder.model.to(device)
 
 # Directory containing .py files
 directory_path = '/home/iyer.ris/graphcast/graphcast'
@@ -26,34 +31,28 @@ os.makedirs(embeddings_path, exist_ok=True)
 with open('example_codebase.json', 'r', encoding='utf-8') as file:
     nodeIdToRawText = json.load(file)
     
+embeddings_list = []
+
 for nodeId, rawText in nodeIdToRawText.items():
-    # Get embeddings for the raw text
-    embeddings = embedder.embed(rawText)
-    
-    embeddingMatrix = torch.vstack(embeddingMatrix, embeddings)
+    # Ensure the rawText is a string
+    if isinstance(rawText, str):
+        # Get embeddings for the raw text
+        embeddings = embedder.embed(rawText)
+        
+        # Move embeddings to CPU if you plan to use numpy or save in a non-GPU format
+        embeddings = embeddings.to('cpu')
+
+        # Collect embeddings
+        embeddings_list.append(embeddings)
+embeddingMatrix = torch.vstack(embeddings_list)
+
     
     # Define the path to save the embeddings
     # embeddings_file_path = os.path.join(embeddings_path, nodeId + '.pt')
     
     # Save the embeddings
-    torch.save(embeddings, embeddings_file_path)
+torch.save(embeddingMatrix, 'vectordb.pt')
 
-# Loop through each file in the directory
-for filename in os.listdir(directory_path):
-    if filename.endswith('.py'):
-        file_path = os.path.join(directory_path, filename)
-        
-        # Read the content of the file
-        with open(file_path, 'r', encoding='utf-8') as file:
-            file_content = file.read()
-        
-        # Get embeddings for the file content
-        embeddings = embedder.embed(file_content)
-        
-        # Define the path to save the embeddings
-        embeddings_file_path = os.path.join(embeddings_path, filename + '.pt')
-        
-        # Save the embeddings
-        torch.save(embeddings, embeddings_file_path)
+print(embeddingMatrix.shape)
 
 print('Embeddings are saved successfully.')
