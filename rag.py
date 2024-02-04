@@ -7,11 +7,11 @@ class RetrievalAugmentedGeneration:
 	""" Performs the RAG algorithm to obtain the most similar nodes to a given prompt
 	"""
 	def __init__(self, prompt: str, knowledgeGraph: CodeGraph) -> None:
-		self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		print(f"Using device: {self.device}")
 		self.embeddingAgent = Embedder("microsoft/codebert-base")
 		self.codebaseEmbeddingVector = torch.load("vectordb.pt").to(self.device)
-		self.promptEmbedding = self.embeddingAgent.embed(prompt)
+		self.promptEmbedding = self.embeddingAgent.embed(prompt).to(self.device)
 		self.knowledgeGraph = knowledgeGraph
 		self.similarities = torch.cosine_similarity(self.codebaseEmbeddingVector, self.promptEmbedding).to(self.device)
 		self.walkThreshold = 0.8
