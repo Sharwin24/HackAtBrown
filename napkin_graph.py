@@ -78,7 +78,11 @@ class CodeBase:
 		for file in self.files:
 			dependencies = []
 			with open(file, 'r') as f:
-				lines = f.readlines()
+				try:
+					lines = f.readlines()
+				except UnicodeDecodeError:
+					print(f"Error reading file: {file}")
+					continue
 				for line in lines:
 					if line.startswith("import") or line.startswith("from"):
 						dependency = line.split(" ")[1]
@@ -119,6 +123,22 @@ class CodeGraph:
 
 
 # Example usage
-examples = CodeBase("MyCodeBase", "example_codebase/")
+
+# Get the codebase
+codebase_link = "https://github.com/google-deepmind/graphcast.git"
+# Clear the example if it already exists
+os.system("rm -rf example_codebase")
+# Clone the codebase to a directory
+os.system(f"git clone {codebase_link} example_codebase")
+# Delete the .git directory and other unnecessary files
+os.system("rm -rf example_codebase/.git")
+os.system("rm -rf example_codebase/.gitignore")
+
+examples = CodeBase("MyCodeBase", "example_codebase")
 examples.populate_dependencies()
 print(examples)
+
+# Save examples to a JSON
+import json
+with open('example_codebase.json', 'w') as f:
+	json.dump(examples, f, default=lambda o: o.__dict__, indent=2)
