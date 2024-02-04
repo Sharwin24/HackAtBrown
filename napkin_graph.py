@@ -34,6 +34,9 @@ class File(Component):
 	def __post_init__(self) -> None:
 		self.dependencies = []
 		self.raw = open(self.path, 'r').read()
+  
+	def __hash__(self) -> int:
+		return hash(self.name)
 
 @dataclass
 class Class(Component):
@@ -51,7 +54,6 @@ class ComponentEdge:
 	"""
 	from_component: Component
 	to_component: Component
-	weight: int = 1
 
 	def __repr__(self) -> str:
 		return f"{self.from_component} -> {self.to_component}"
@@ -64,77 +66,29 @@ class CodeBase:
 	"""
 	def __init__(self, name: str, codebase_directory: str) -> None:
 		self.name = name
-		self.files = [] # list[str]
-		# self.files = [f for f in os.listdir(codebase_directory) if f.endswith('.py')]
+		self.fileDictionary = {} # dict[str, File] - file name to file object
 		# Add all files in the subdirectories of the codebase to the list of files
 		for root, dirs, files in os.walk(codebase_directory):
 			for file in files:
 				if file.endswith('.py'):
-					self.files.append(os.path.join(root, file))
+					# Construct a Component object for the file
+					f = File(id=len(self.files), name=file, path=os.path.join(root, file))
+					self.fileDictionary[file] = f
 		self.dependencies = {} # dict[file, list[dependency]]
-  
-	def add_file(self, file: str, dependencies: 'list[str]') -> None:
-		""" Adds a file to the codebase with its dependencies
-  
-		Args:
-				file (str): The file to be added (including file extension)
-				dependencies ('list[str]'): The list of dependencies of the file
-		"""
-		self.files.append(file)
-		self.dependencies[file] = dependencies
-  
-	def remove_file(self, file: str) -> None:
-		""" Removes a file from the codebase
-
-		Args:
-				file (str): The file to be removed (including file extension)
-		"""
-		self.files.remove(file)
-  
-	def add_dependency(self, file: str, dependency: str) -> None:
-		""" Add a dependency to a file
-
-		Args:
-				file (str): The file to which the dependency is to be added
-				dependency (str): The dependency to be added
-		"""
-		self.dependencies[file].append(dependency)
-  
-	def remove_dependency(self, file: str, dependency: str) -> None:
-		""" Remove a dependency from a file
-
-		Args:
-				file (str): The file from which the dependency is to be removed
-				dependency (str): The dependency to be removed
-		"""
-		self.dependencies[file].remove(dependency)
-  
-	def remove_dependency(self, dependency: str) -> None:
-		""" Remove a dependency from all files
-  
-		Args:
-				dependency (str): The dependency to be removed
-		"""
-		for file in self.files:
-			try:
-				if dependency in self.dependencies[file]:
-					self.dependencies[file].remove(dependency)
-			except KeyError:
-				continue
-  
-	def get_files(self) -> 'list[str]':
+	
+	def get_files(self) -> 'list[File]':
 		""" Get a list of files in the codebase
 
 		Returns:
-				'list[str]': The list of files in the codebase
+				'list[File]': The list of files in the codebase
 		"""
-		return self.files
+		return self.fileDictionary.values()
 
-	def get_dependencies(self, file: str) -> 'list[str]':
+	def get_dependencies(self, file: File) -> 'list[File]':
 		""" Get the dependencies of a file
 
 		Returns:
-				'list[str]': The list of dependencies of the file
+				'list[File]': The list of dependencies of the file
 		"""
 		try:
 			return self.dependencies[file]
@@ -157,7 +111,8 @@ class CodeBase:
 						dependency = line.split(" ")[1].strip()
 						dependencies.append(dependency)
 			self.dependencies[file] = dependencies
-   
+	
+	 
 	def populate_dependencies_ast(self) -> None:
 		""" Populates the dependencies of the files in the codebase using the ast module
 		"""
@@ -195,15 +150,15 @@ class CodeGraph:
 	""" The graph for a codebase with nodes representing components and edges representing the dependencies/imports
 			Pass a complete CodeBase object to the constructor
 	"""
-
 	def __init__(self, codebase: CodeBase) -> None:
 		self.codebase = codebase
 		files = codebase.get_files()
 		if not files or len(files) == 0:
 			raise ValueError("The codebase is empty")
+		self.fileSet = set(files)
 		self.nodes = [] # List[Component]
 		self.edges = [] # List[ComponentEdge]
-  
+	
 	def add_node(self, node: Component) -> None:
 		""" Adds a node to the graph
 		"""
@@ -213,7 +168,51 @@ class CodeGraph:
 		""" Adds an edge to the graph
 		"""
 		self.edges.append(edge)
+  
+	def find_connected_nodes(self, node: Component) -> 'list[Component]':
+		""" Finds all nodes connected to a given node
+		"""
+		connected_nodes = []
+		for edge in self.edges:
+			if edge.from_component == node:
+				connected_nodes.append(edge.to_component)
+		return connected_nodes
+  
+	def _dfs_build_deps(self, node: ast.AST, parent: Component = None) -> None:
+		""" Recursively builds the dependencies of a component node
+		"""
+		if isinstance(node, ast.Import):
+			for alias in node.names:
+				if alias.name in self.fileDictionary:
+					dependency = self.fileDictionary[alias.name]
+					self.add_edge(ComponentEdge(parent, dependency))
+		elif isinstance(node, ast.ImportFrom):
+			if alias.name in self.fileDictionary:
+				dependency = self.fileDictionary[alias.name]
+				self.add_edge(ComponentEdge(parent, dependency))
+		elif isinstance(node, ast.ClassDef):
+			current_component = Class(node.name, parent, [], ast.unparse(node))
+			if parent:
+				self.add_edge(ComponentEdge(parent, current_component))
+			parent = current_component
+		elif isinstance(node, ast.FunctionDef):
+			current_component = Function(node.name, parent, [], ast.unparse(node))
+			if parent:
+				self.add_edge(ComponentEdge(parent, current_component))
+			parent = current_component
 
+		for child in ast.iter_child_nodes(node):
+			self._dfs_build_deps(child, parent)
+   
+  
+	def populate_graph(self) -> None:
+		""" Populates the graph with component nodes and edges representing
+		the files, classes, and functions in the codebase and their dependencies
+		"""
+		for file in self.codebase.get_files():
+			tree = ast.parse(file.raw)
+			self._dfs_build_deps(tree, file)
+		
 
 # Example usage
 
