@@ -39,7 +39,6 @@ class QAGenerator:
     response = self.client.chat.completions.create(
       model="gpt-3.5",
       messages=messages,
-      response_format={"type": "json_object"}
     )
 
     json_response = response.choices[0].message.content
