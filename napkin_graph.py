@@ -6,9 +6,8 @@
 import os
 import sys
 import ast
-from dataclasses import dataclass
 import itertools
-
+import json
 
 class Component():
 	""" The base class for all components of the codebase
@@ -101,43 +100,6 @@ class CodeBase:
 		except KeyError:
 			return []
 	
-	# def populate_dependencies(self) -> None:
-	# 	""" Populates the dependencies of the files in the codebase by reading the imports in the files
-	# 	"""
-	# 	for file in self.files:
-	# 		dependencies = []
-	# 		with open(file, 'r') as f:
-	# 			try:
-	# 				lines = f.readlines()
-	# 			except UnicodeDecodeError:
-	# 				print(f"Error reading file: {file}")
-	# 				continue
-	# 			for line in lines:
-	# 				if line.startswith("import") or line.startswith("from"):
-	# 					dependency = line.split(" ")[1].strip()
-	# 					dependencies.append(dependency)
-	# 		self.dependencies[file] = dependencies
-	
-	 
-	# def populate_dependencies_ast(self) -> None:
-	# 	""" Populates the dependencies of the files in the codebase using the ast module
-	# 	"""
-	# 	for file in self.files:
-	# 		dependencies = []
-	# 		with open(file, 'r') as f:
-	# 			try:
-	# 				tree = ast.parse(f.read())
-	# 			except:
-	# 				print(f"Error reading file: {file}")
-	# 				continue
-	# 			for node in ast.walk(tree):
-	# 				if isinstance(node, ast.Import):
-	# 					for alias in node.names:
-	# 						dependencies.append(alias.name)
-	# 				elif isinstance(node, ast.ImportFrom):
-	# 					dependencies.append(node.module)
-	# 		self.dependencies[file] = dependencies
-	
 	def __repr__(self) -> str:
 		""" Prints the CodeBase with files and their dependencies
 
@@ -161,7 +123,6 @@ class CodeGraph:
 		files = codebase.get_files()
 		if not files or len(files) == 0:
 			raise ValueError("The codebase is empty")
-		self.fileSet = set(files)
 		self.nodes = [] # List[Component]
 		self.edges = [] # List[ComponentEdge]
   
@@ -169,12 +130,9 @@ class CodeGraph:
 		""" Prints the graph with nodes and edges
 		"""
 		value = f"CodeBase: {self.codebase.name} Graph with {len(self.nodes)} nodes and {len(self.edges)} edges\n"
-		value += "\tNodes: \n"
+		value += "\tNodes -> Edges: \n"
 		for node in self.nodes:
-			value += f"{node} -> {self.find_connected_nodes(node)}\n"
-		value += "\tEdges: \n"
-		for edge in self.edges:
-			value += f"{edge}\n"
+			value += f"\t\t{node} -> {self.find_connected_nodes(node)}\n"
 		return value
 
 	def get_node_by_id(self, id: int) -> Component:
@@ -184,6 +142,16 @@ class CodeGraph:
 			if node.id == id:
 				return node
 		return None
+
+	def print_node_raw(self, id: int) -> None:
+		""" Prints the raw code of a node
+		"""
+		node = self.get_node_by_id(id)
+		print(f"Node {id}, {node.name} raw:")
+		if node:
+			print(node.raw)
+		else:
+			print("Node not found")
 	
 	def add_node(self, node: Component) -> None:
 		""" Adds a node to the graph
@@ -194,6 +162,20 @@ class CodeGraph:
 		""" Adds an edge to the graph
 		"""
 		self.edges.append(edge)
+  
+	def create_adjacency_matrix(self) -> 'list[list[int]]':
+		""" Creates an adjacency matrix for the graph using the node ids
+		"""
+		max_id = max([node.id for node in self.nodes])
+		id_range = range(max_id + 1)
+		adjacency_matrix = [[0 for _ in id_range] for _ in id_range]
+		for edge in self.edges:
+			try:
+				adjacency_matrix[edge.from_component.id][edge.to_component.id] = 1
+				adjacency_matrix[edge.to_component.id][edge.from_component.id] = 1
+			except IndexError:
+				print(f"Index out of range for edge {edge} with from_component ID {edge.from_component.id} and to_component ID {edge.to_component.id}")
+		return adjacency_matrix
   
 	def find_connected_nodes(self, node: Component) -> 'list[Component]':
 		""" Finds all nodes connected to a given node
@@ -243,7 +225,25 @@ class CodeGraph:
 			self.add_node(file)
 			tree = ast.parse(file.raw)
 			self._dfs_build_deps(tree, file)
-		
+   
+	def delete_small_nodes(self, threshold: int = 300) -> None:
+		""" Deletes nodes with less than threshold connections
+		"""
+		for node in self.nodes:
+			if len(node.raw) < threshold:
+				self.nodes.remove(node)
+				for edge in self.edges:
+					if edge.from_component == node or edge.to_component == node:
+						self.edges.remove(edge)
+  
+	def create_id_to_raw(self) -> 'dict[int, str]':
+		""" Creates a dictionary mapping node ids to their raw code
+		"""
+		id_to_raw = {}
+		for node in self.nodes:
+			id_to_raw[node.id] = node.raw
+		return id_to_raw
+
 
 # Example usage
 
@@ -257,18 +257,18 @@ os.system(f"git clone {codebase_link} example_codebase")
 os.system("rm -rf example_codebase/.git")
 os.system("rm -rf example_codebase/.gitignore")
 
-examples = CodeBase("MyCodeBase", "small_repo")
-# examples.populate_dependencies()
+examples = CodeBase("MyCodeBase", "example_codebase")
 print(examples)
 
 # Build a graph from the codebase
 graph = CodeGraph(examples)
 graph.populate_graph()
+graph.delete_small_nodes()
 print(graph)
 
-# print("populate_dependencies and populate_dependencies_ast are the same: ", all(set(examples.get_dependencies(file)) == set(examples_ast.get_dependencies(file)) for file in examples.get_files()))
-
 # Save examples to a JSON
-# import json
-# with open('example_codebase.json', 'w') as f:
-# 	json.dump(examples, f, default=lambda o: o.__dict__, indent=2)
+with open('example_codebase.json', 'w') as f:
+  # Get id to raw dict
+	id_to_raw = graph.create_id_to_raw()
+	print(id_to_raw)
+	json.dump(id_to_raw, f)
