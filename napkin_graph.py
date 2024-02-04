@@ -73,6 +73,7 @@ class CodeBase:
 	def __init__(self, name: str, codebase_directory: str) -> None:
 		self.name = name
 		self.fileDictionary = {} # dict[str, File] - file name to file object
+		self.funcDictionary = {} # dict[str, Function] - function name to function object
 		# Add all files in the subdirectories of the codebase to the list of files
 		for root, dirs, files in os.walk(codebase_directory):
 			for file in files:
@@ -100,43 +101,6 @@ class CodeBase:
 			return self.dependencies[file]
 		except KeyError:
 			return []
-	
-	# def populate_dependencies(self) -> None:
-	# 	""" Populates the dependencies of the files in the codebase by reading the imports in the files
-	# 	"""
-	# 	for file in self.files:
-	# 		dependencies = []
-	# 		with open(file, 'r') as f:
-	# 			try:
-	# 				lines = f.readlines()
-	# 			except UnicodeDecodeError:
-	# 				print(f"Error reading file: {file}")
-	# 				continue
-	# 			for line in lines:
-	# 				if line.startswith("import") or line.startswith("from"):
-	# 					dependency = line.split(" ")[1].strip()
-	# 					dependencies.append(dependency)
-	# 		self.dependencies[file] = dependencies
-	
-	 
-	# def populate_dependencies_ast(self) -> None:
-	# 	""" Populates the dependencies of the files in the codebase using the ast module
-	# 	"""
-	# 	for file in self.files:
-	# 		dependencies = []
-	# 		with open(file, 'r') as f:
-	# 			try:
-	# 				tree = ast.parse(f.read())
-	# 			except:
-	# 				print(f"Error reading file: {file}")
-	# 				continue
-	# 			for node in ast.walk(tree):
-	# 				if isinstance(node, ast.Import):
-	# 					for alias in node.names:
-	# 						dependencies.append(alias.name)
-	# 				elif isinstance(node, ast.ImportFrom):
-	# 					dependencies.append(node.module)
-	# 		self.dependencies[file] = dependencies
 	
 	def __repr__(self) -> str:
 		""" Prints the CodeBase with files and their dependencies
@@ -216,21 +180,35 @@ class CodeGraph:
 					self.add_edge(ComponentEdge(parent, dependency))
 		elif isinstance(node, ast.ImportFrom):
 			if self.codebase.fileDictionary.__contains__(node.module):
-				dependency =self.codebase.fileDictionary[alias.name]
+				dependency = self.codebase.fileDictionary[alias.name]
 				self.add_edge(ComponentEdge(parent, dependency))
 		elif isinstance(node, ast.ClassDef):
 			current_component = Class(node.name, parent, [], ast.unparse(node))
+			print(f"adding {node.name} to funcDictionary")
+			self.codebase.funcDictionary[node.name] = current_component
 			self.add_node(current_component)
 			if parent:
 				self.add_edge(ComponentEdge(parent, current_component))
 			parent = current_component
 		elif isinstance(node, ast.FunctionDef):
 			current_component = Function(node.name, parent, [], ast.unparse(node))
+			print(f"adding {node.name} to funcDictionary")
+			self.codebase.funcDictionary[node.name] = current_component
 			self.add_node(current_component)
 			if parent:
 				self.add_edge(ComponentEdge(parent, current_component))
 			parent = current_component
-
+		elif isinstance(node, ast.Call):
+			if isinstance(node.func, ast.Name):
+				funcname = node.func.id
+			elif isinstance(node.func, ast.Attribute):
+				funcname = node.func.attr
+			print("funcname: ", funcname)
+			if self.codebase.funcDictionary.__contains__(funcname):
+				print("funcname in funcDictionary: ", self.codebase.funcDictionary[funcname])
+				dependency = self.codebase.funcDictionary[funcname]
+				self.add_edge(ComponentEdge(parent, dependency))
+	
 		for child in ast.iter_child_nodes(node):
 			self._dfs_build_deps(child, parent)
    
