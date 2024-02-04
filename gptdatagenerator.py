@@ -6,13 +6,17 @@ import json
 from model import Embedder
 
 class QAGenerator:
-  def __init__(self, dir_path="./"):
+  def __init__(self, json_path="./"):
     os.environ['OPENAI_API_KEY'] = self.read_key()
     self.client = OpenAI()
-    self.qa = self.generate_qa_from_directory(dir_path)
+    self.qa = {}
+    
+    self.generate_qa_from_json(json_path)
     
     self.embedded_questions = self.embed_questions()
     self.embedded_answers = self.embed_answers()
+
+    self.save_embeddings("questions.npy", "answers.npy")
   
   def read_key(self, key_path="./key.txt"):
     with open(key_path, 'r') as file:
@@ -37,13 +41,17 @@ class QAGenerator:
       return "Code too long to process"
 
     response = self.client.chat.completions.create(
-      model="gpt-3.5",
+      model="gpt-3.5-turbo",
       messages=messages,
     )
 
     json_response = response.choices[0].message.content
-    print(json_response)
-    qa = json.loads(json_response)
+
+    try:
+      qa = json.loads(json_response)
+    except:
+      return "Error parsing response"
+    
     return qa
 
   def embed_questions(self):
@@ -55,6 +63,13 @@ class QAGenerator:
     answers = [q['answer'] for qa in self.qa for q in qa]
     embedder = Embedder("microsoft/codebert-base")
     return embedder.embed(answers)
+  
+  def save_embeddings(self, file_q_path, file_a_path):
+    with open(file_q_path, 'wb') as file_q:
+      np.save(file, self.embedded_questions)
+    
+    with open(file_a_path, 'wb') as file_a:
+      np.save(file, self.embedded_answers)
     
   def generate_qa_from_file(self, file_path):
     with open(file_path, 'r') as file:
@@ -71,8 +86,16 @@ class QAGenerator:
     file_paths = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.endswith('.py')]
     return self.generate_qa_from_files(file_paths)
   
+  def generate_qa_from_json(self, json_path):
+    with open(json_path, 'r') as file:
+      data = json.load(file)
+      for node, code in data.items():
+        self.qa[node] = self.generate_qa(code)
+      
 if __name__ == "__main__":
-  dir_path = '/Users/arnavb/Code/projects/graphcast/graphcast/'
-  qa_generator = QAGenerator(dir_path)
+  json_path = "./example_codebase.json"
+  qa_generator = QAGenerator(json_path)
 
-  print(qa_generator.qa)
+  qa_json = "./qa.json"
+  with open(qa_json, 'w') as file:
+    json.dump(qa_generator.qa, file)
