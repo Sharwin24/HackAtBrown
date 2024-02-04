@@ -1,0 +1,70 @@
+{
+  "name": "napkin",
+  "displayName": "Napkin",
+  "description": "Developer's assistant for understanding codebases",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Napkin",
+      "properties": {
+        "napkin.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/Disable this extension"
+        },
+        "napkin.askPythonPath": {
+          "type": "string",
+          "default": "C:/Users/Sharwin/Documents/Github/HackAtBrown/napkin/src/ask.py",
+          "description": "Path to the asking python file"
+      },
+        "napkin.trainPythonPath": {
+          "type": "string",
+          "default": "C:/Users/Sharwin/Documents/Github/HackAtBrown/napkin/src/train.py",
+          "description": "Path to the training python file"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "napkin.help",
+        "title": "Napkin-Help"
+      },
+      {
+        "command": "napkin.ask",
+        "title": "Napkin-Ask"
+      },
+      {
+        "command": "napkin.train",
+        "title": "Napkin-Train"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.86.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.9"
+  }
+}
