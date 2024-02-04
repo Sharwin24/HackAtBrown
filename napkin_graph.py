@@ -325,3 +325,9 @@ class CodeGraph:
 			# Get id to raw dict
 			id_to_raw = self.create_id_to_raw()
 			json.dump(id_to_raw, f, indent=4, sort_keys=True)
+   
+	def reindex_graph(self) -> None:
+		""" Reindexes the graph to have node ids from 0 to n
+		"""
+		for i in range(len(self.nodes)):
+			self.nodes[i].id = i

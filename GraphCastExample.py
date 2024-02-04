@@ -16,10 +16,11 @@ print(f"Using device: {device}")
 embedder = Embedder("microsoft/codebert-base")
 
 # Directory containing .py files
-directory_path = '/home/iyer.ris/graphcast/graphcast'
+# directory_path = '/home/iyer.ris/graphcast/graphcast'
+directory_path = 'graphcast/graphcast'
 
 # Directory to store the embeddings
-embeddings_path = '/home/iyer.ris/HackAtBrown/GraphCastEmbeddings'
+embeddings_path = 'GraphCastEmbeddings/'
 
 # Create the directory if it doesn't exist
 os.makedirs(embeddings_path, exist_ok=True)
@@ -27,7 +28,7 @@ os.makedirs(embeddings_path, exist_ok=True)
 # Loop through the JSON and get the embeddings
 
 # Read example_codebase.json
-with open('example_codebase.json', 'r', encoding='utf-8') as file:
+with open('graphcast.json', 'r', encoding='utf-8') as file:
     nodeIdToRawText = json.load(file)
     
 embeddings_list = []

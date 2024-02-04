@@ -53,6 +53,7 @@ graphcastGraph.populate_graph()
 graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
+graphcastGraph.reindex_graph()
 # print(graphcastGraph)
 
 # Usage Example
