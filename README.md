@@ -1,19 +1,32 @@
-# HackAtBrown
-Hack@Brown 2024 Hackathon Project
-## Inspiration
-As developers, we are always exploring new projects and open-source repositories. However, the complexity and scale of these codebases serve as a major barrier to entry even for the most experienced developers. We wanted to create a tool that would help developers navigate these codebases more effectively, answering questions and providing context on both specific and broad aspects of the codebase. 
-
-Ever since ChatGPT released in November of 2022, large language models have permeated every aspect of our lives. In particular, developers are using these models to enhance their productivity, particularly through the use of code generation. However many copilot products lack a true understanding of the repository and codebase, limited in scope by their low amount of context. 
-
-Simultaneously, prompt engineering has become a popular method for improving the performance of language models. Specificaly, retrieval-augmented generation (RAG) models have been shown to be effective as a way to ground LLMs within a specific context, reducing their chance of hallucinations and enabling them to generate more accurate and relevant responses. Even more recently, graph RAG models have proven to be a particularly fast and computationally efficient way to organize information and utilize a knowledge graph to improve query results.
-
-## What it does
-Napkin is a graph RAG tool that converts a codebase into a knowledge graph containing detailled relationships between all files, functions, and classes. This knowledge graph is then used to answer questions about the codebase, automatically providing relevant context and information to queries made by the user to a chatbot. In particular, the 
-
-## How we built it
+# Napkin ![napkin](images/napkin_logo.png)
+A fast, lightweight graph retrieval-augmented generation tool for navigating codebases. 
 
 
-## Challenges we ran into
+## 💡 Inspiration
+As developers, we are always exploring new projects and open-source repositories. However, the complexity and scale of these codebases serve as a major barrier to entry even for the most experienced developers. Even after spending countless hours reading over files, documentations, and (hopefully solved) issues, it's easy to find yourself lost and intimidated. We wanted to create a tool that would help developers navigate these codebases more effectively, answering questions and providing context on both specific and broad aspects of the codebase.
+
+Modern large language models struggle with hallucinations, lack of specificity, and lack of context. We hope to address these shortcomings by using a knowledge graph to provide context and information to the model, allowing it to better understand the codebase and answer questions more effectively.
+
+## 🙌 What it does
+Napkin is a graph retrieval-augmented generation tool that converts a codebase into a knowledge graph containing detailed relationships between all files, functions, and classes. This knowledge graph is then used to answer questions about the codebase, automatically providing relevant context and information to queries made by the user to a fine-tuned LLM.
+
+The basic workflow of Napkin is as follows:
+![pipeline](images/pipeline.jpg)
+The process begins when a user asks a question about a codebase. The question then is embedded into a vector using a pre-trained model. The vector is then used to query the knowledge graph, which returns a set of nodes that represent the files, functions, and classes that are most relevant to the question. The nodes are then used to augment the original prompt and generate a response to the question using a fine-tuned language model. The response is then returned to the user, providing them with the information they need to understand the codebase better.
+
+## 👷 How we built it
+As shown in the prior section, Napkin has a few key moving parts:
+1. Custom built python knowledge graph parser
+2. LLM fine tuning via Hugging Face
+3. Fine-tuned embedding model
+4. Graph retrieval algorithm
+5. Prompt augmentation engine
+
+We built Napkin's python knowledge graph  primarily using Python, with the help of the `ast` library, a powerful module that allows for the parsing of python code into an abstract syntax tree (AST). We used this library to parse each 
+
+![graph structure](images/graph_structure.jpg)
+
+## 🛑 Challenges we ran into
 We began our project hoping to implement one of two preexisting models for knowledge graph generation from python repositories. The first was Google research's [python-graphs](https://github.com/google-research/python-graphs), which excels at creating in-depth control flow graphs and program graphs from functions in python. However, we quickly realized that this model was not well-suited for our purposes, as it was designed primarily for functions and single files at largest, and would not be able to handle the scale of a full codebase. Our model relies on a thorough understanding of the entire codebase and the relationships between distinct files, functions, and classes, which python-graphs was not designed to handle. The next model we attempted to use was IBM Wala's [graph4code](https://github.com/wala/graph4code), which builds upon models such as python-graphs by explicitly modeling library calls, following data flow across functions, and simulating function calls. Despite its appeal, the model was not as well-documented and we spent many hours attempting to implement it towards the beginning of the hackathon only to choose another route.
 
 Instead, we came to a decision as a group to build our own knowledge graph creation tool from scratch to analyze classes and functions in python, along with the way that they interact with each other. We used the `ast` library to parse the python code of each file into an abstract syntax tree (AST), a data structure used to represent the structure of code written in a formal language. We then iterated through each file, paying close attention to any import statements that represented relationships beteween files. We also kept track of the parent/child relationships between all classes and functions. Next, we identified all function calls and class instantiations to further populate the relationships within our graph.
@@ -24,13 +37,13 @@ Upon constructing the graph by recursively traversing the AST of every file in t
 
 Another challenge we faced was
 
-## Accomplishments that we're proud of
+## 😁 Accomplishments that we're proud of
 We're proud of 
 
-## What we learned
+## 🧑‍🎓 What we learned
 
 
-## What's next for Napkin
+## 🔮 What's next for Napkin
 There are four main ways for Napkin to enhance and fine tune its performance:
 1. The knowledge graph
 2. Chatbot fine tuning
