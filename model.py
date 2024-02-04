@@ -9,8 +9,8 @@ class Transformer:
         self.model = AutoModelForCausalLM.from_pretrained(model_name)
     
     def predict(self, input_prompt:str, context: str):
-        inputs = input_prompt + " " + context
-        inputs = self.tokenizer(inputs, return_tensors="pt")
+        
+        inputs = self.tokenizer(f"{input_prompt} {context}", return_tensors="pt")
 
         with torch.no_grad():
             outputs = self.model(**inputs)
@@ -23,7 +23,7 @@ class Embedder:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
 
-    def embed(self, texts):
+    def embed(self, texts:str):
         # Tokenization: Encode the inputs
         inputs = self.tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
         # Model Inference: Get the embeddings
