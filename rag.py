@@ -37,9 +37,8 @@ class RetrievalAugmentedGeneration:
 		# Get neighbors and find the most similar one by cosine similarity
 		starting_node = self.knowledgeGraph.get_node_by_id(start_node_id)
 		neighbors = self.knowledgeGraph.find_connected_nodes(starting_node)
-		neighborsById = [node.id for node in neighbors]
+		neighborsById = [node.id for node in neighbors if node != None and node.id < self.knowledgeGraph.get_true_length()]
 		scores = self.similarities[neighborsById]
-		print(f"Scores Shape {scores.shape}, NeighborsByID : {neighborsById}")
 		newStartNode = neighborsById[torch.argmax(scores)]
 		self.augmentationNodesById.append(newStartNode)
 		self.graph_walk(newStartNode)
@@ -53,6 +52,7 @@ graphcastGraph.populate_graph()
 graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
+graphcastGraph.delete_edges_to_non_existent_nodes()
 graphcastGraph.reindex_graph()
 # print(graphcastGraph)
 
