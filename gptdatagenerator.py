@@ -1,9 +1,9 @@
 import numpy as np
-import torch
 from openai import OpenAI
 import os
 import json
 from model import Embedder
+import torch as pt
 
 class QAGenerator:
   def __init__(self, json_path="./"):
@@ -12,11 +12,6 @@ class QAGenerator:
     self.qa = {}
     
     self.generate_qa_from_json(json_path)
-    
-    self.embedded_questions = self.embed_questions()
-    self.embedded_answers = self.embed_answers()
-
-    self.save_embeddings("questions.npy", "answers.npy")
   
   def read_key(self, key_path="./key.txt"):
     with open(key_path, 'r') as file:
@@ -57,12 +52,27 @@ class QAGenerator:
   def embed_questions(self):
     questions = [q['question'] for qa in self.qa for q in qa]
     embedder = Embedder("microsoft/codebert-base")
-    return embedder.embed(questions)
+    embeddings_list = []
+    for q in questions:
+      # Collect embeddings
+      embeddings = embedder.embed(q)
+      embeddings_list.append(embeddings)
+      embeddingMatrix = pt.vstack(embeddings_list)
+
+    return embeddingMatrix
 
   def embed_answers(self):
     answers = [q['answer'] for qa in self.qa for q in qa]
+    
     embedder = Embedder("microsoft/codebert-base")
-    return embedder.embed(answers)
+    embeddings_list = []
+    for a in answers:
+      # Collect embeddings
+      embeddings = embedder.embed(a)
+      embeddings_list.append(embeddings)
+      embeddingMatrix = pt.vstack(embeddings_list)
+    
+    return embeddingMatrix
   
   def save_embeddings(self, file_q_path, file_a_path):
     with open(file_q_path, 'wb') as file_q:
