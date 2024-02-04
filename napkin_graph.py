@@ -157,25 +157,6 @@ class CodeBase:
 						dependency = line.split(" ")[1].strip()
 						dependencies.append(dependency)
 			self.dependencies[file] = dependencies
-   
-	def populate_dependencies_ast(self) -> None:
-		""" Populates the dependencies of the files in the codebase using the ast module
-		"""
-		for file in self.files:
-			dependencies = []
-			with open(file, 'r') as f:
-				try:
-					tree = ast.parse(f.read())
-				except:
-					print(f"Error reading file: {file}")
-					continue
-				for node in ast.walk(tree):
-					if isinstance(node, ast.Import):
-						for alias in node.names:
-							dependencies.append(alias.name)
-					elif isinstance(node, ast.ImportFrom):
-						dependencies.append(node.module)
-			self.dependencies[file] = dependencies
 	
 	def __repr__(self) -> str:
 		""" Prints the CodeBase with files and their dependencies
@@ -195,7 +176,6 @@ class CodeGraph:
 	""" The graph for a codebase with nodes representing components and edges representing the dependencies/imports
 			Pass a complete CodeBase object to the constructor
 	"""
-
 	def __init__(self, codebase: CodeBase) -> None:
 		self.codebase = codebase
 		files = codebase.get_files()
@@ -213,7 +193,42 @@ class CodeGraph:
 		""" Adds an edge to the graph
 		"""
 		self.edges.append(edge)
+  
+	def _dfs_build_deps(self, node: ast.AST, parent: Component = None) -> None:
+		""" Recursively builds the dependencies of a component node
+		"""
+		if isinstance(node, ast.Import):
+			for alias in node.names:
+				if alias.name in self.fileDictionary:
+					dependency = self.fileDictionary[alias.name]
+					self.add_edge(ComponentEdge(parent, dependency))
+		elif isinstance(node, ast.ImportFrom):
+			if alias.name in self.fileDictionary:
+				dependency = self.fileDictionary[alias.name]
+				self.add_edge(ComponentEdge(parent, dependency))
+		elif isinstance(node, ast.ClassDef):
+			current_component = Class(node.name, parent, [], ast.unparse(node))
+			if parent:
+				self.add_edge(ComponentEdge(parent, current_component))
+			parent = current_component
+		elif isinstance(node, ast.FunctionDef):
+			current_component = Function(node.name, parent, [], ast.unparse(node))
+			if parent:
+				self.add_edge(ComponentEdge(parent, current_component))
+			parent = current_component
 
+		for child in ast.iter_child_nodes(node):
+			self._dfs_build_deps(child, parent)
+   
+  
+	def populate_graph(self) -> None:
+		""" Populates the graph with component nodes and edges representing
+		the files, classes, and functions in the codebase and their dependencies
+		"""
+		for file in self.codebase.get_files():
+			tree = ast.parse(file.raw)
+			self._dfs_build_deps(tree, file)
+		
 
 # Example usage
 
