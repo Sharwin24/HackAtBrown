@@ -313,3 +313,12 @@ class CodeGraph:
 		for node in self.nodes:
 			id_to_raw[node.id] = node.raw
 		return id_to_raw
+
+	def create_id_to_raw_json(self) -> None:
+		""" Saves the dictionary mapping node ids to their raw code to a JSON
+		"""
+		# Save examples to a JSON
+		with open('graphcast.json', 'w') as f:
+			# Get id to raw dict
+			id_to_raw = self.create_id_to_raw()
+			json.dump(id_to_raw, f, indent=4, sort_keys=True)

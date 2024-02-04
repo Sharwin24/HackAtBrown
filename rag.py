@@ -2,17 +2,18 @@ import torch
 import numpy as np
 from model import Embedder
 from napkin_graph import CodeGraph, CodeBase
-import json
 
 class RetrievalAugmentedGeneration:
 	""" Performs the RAG algorithm to obtain the most similar nodes to a given prompt
 	"""
 	def __init__(self, prompt: str, knowledgeGraph: CodeGraph) -> None:
+		self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		print(f"Using device: {self.device}")
 		self.embeddingAgent = Embedder("microsoft/codebert-base")
-		self.codebaseEmbeddingVector = torch.load("vectordb.pt")
+		self.codebaseEmbeddingVector = torch.load("vectordb.pt").to(self.device)
 		self.promptEmbedding = self.embeddingAgent.embed(prompt)
 		self.knowledgeGraph = knowledgeGraph
-		self.similarities = torch.cosine_similarity(self.codebaseEmbeddingVector, self.promptEmbedding)
+		self.similarities = torch.cosine_similarity(self.codebaseEmbeddingVector, self.promptEmbedding).to(self.device)
 		self.walkThreshold = 0.8
 		self.augmentationNodesById = []
 
@@ -53,12 +54,6 @@ graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.split_large_nodes()
 
-# Save examples to a JSON
-with open('graphcast.json', 'w') as f:
-  # Get id to raw dict
-	id_to_raw = graphcastGraph.create_id_to_raw()
-	json.dump(id_to_raw, f, indent=4, sort_keys=True)
-
-# Graph
+# Usage Example
 prompt = "How to read a file in Python?"
 RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
