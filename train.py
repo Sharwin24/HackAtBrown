@@ -16,7 +16,7 @@ class CustomLossFunction(nn.Module):
 
     def forward(self, predictions, targets):
         # Define how your loss is computed and return it
-        loss = torch.mean((predictions - targets) ** 2)  # Example: Mean Squared Error
+         
         return loss
 
 
