@@ -7,16 +7,21 @@ import os
 import sys
 import ast
 from dataclasses import dataclass
+import itertools
 
-@dataclass
-class Component:
+
+class Component():
 	""" The base class for all components of the codebase
 	"""
-	id: int
-	name: str
-	parent: 'Component' = None
-	children: 'list[Component]' = None
-	raw: str = None
+  
+	id_iter = itertools.count()
+ 
+	def __init__(self, name: str, parent: 'Component', children: 'list[Component]', raw: str) -> None:
+		self.name = name
+		self.parent = parent
+		self.children = children
+		self.raw = raw
+		self.id = next(self.id_iter)
 
 	def __repr__(self) -> str:
 		return f"{self.name}"
@@ -24,36 +29,37 @@ class Component:
 	def __hash__(self) -> int:
 		return hash(self.id, self.name)
 
-@dataclass
 class File(Component):
 	""" The class for a file in the codebase
 	"""
-	path: str
-	dependencies: 'list[File]' = None
-	
-	def __post_init__(self) -> None:
+ 
+	def __init__(self, name: str, parent: Component, children: 'list[Component]', raw: str, path: str, dependencies: 'list[File]') -> None:
+		super().__init__(name, parent, children, raw)
+		self.path = path
 		self.dependencies = []
-		self.raw = open(self.path, 'r').read()
+		try:
+			self.raw = open(self.path, 'r').read()
+		except UnicodeDecodeError:
+			pass
   
 	def __hash__(self) -> int:
 		return hash(self.name)
 
-@dataclass
 class Class(Component):
 	""" The class for a class in the codebase
 	"""
 	pass
 
-@dataclass
 class Function(Component):
 	pass
 
-@dataclass
 class ComponentEdge:
 	""" The class for an edge between two components in the codebase
 	"""
-	from_component: Component
-	to_component: Component
+ 
+	def __init__(self, from_component: Component, to_component: Component) -> None:
+		self.from_component = from_component
+		self.to_component = to_component
 
 	def __repr__(self) -> str:
 		return f"{self.from_component} -> {self.to_component}"
@@ -72,7 +78,7 @@ class CodeBase:
 			for file in files:
 				if file.endswith('.py'):
 					# Construct a Component object for the file
-					f = File(id=len(self.files), name=file, path=os.path.join(root, file))
+					f = File(name=file, path=os.path.join(root, file), parent=None, children=[], raw="", dependencies=[])
 					self.fileDictionary[file] = f
 		self.dependencies = {} # dict[file, list[dependency]]
 	
@@ -95,42 +101,42 @@ class CodeBase:
 		except KeyError:
 			return []
 	
-	def populate_dependencies(self) -> None:
-		""" Populates the dependencies of the files in the codebase by reading the imports in the files
-		"""
-		for file in self.files:
-			dependencies = []
-			with open(file, 'r') as f:
-				try:
-					lines = f.readlines()
-				except UnicodeDecodeError:
-					print(f"Error reading file: {file}")
-					continue
-				for line in lines:
-					if line.startswith("import") or line.startswith("from"):
-						dependency = line.split(" ")[1].strip()
-						dependencies.append(dependency)
-			self.dependencies[file] = dependencies
+	# def populate_dependencies(self) -> None:
+	# 	""" Populates the dependencies of the files in the codebase by reading the imports in the files
+	# 	"""
+	# 	for file in self.files:
+	# 		dependencies = []
+	# 		with open(file, 'r') as f:
+	# 			try:
+	# 				lines = f.readlines()
+	# 			except UnicodeDecodeError:
+	# 				print(f"Error reading file: {file}")
+	# 				continue
+	# 			for line in lines:
+	# 				if line.startswith("import") or line.startswith("from"):
+	# 					dependency = line.split(" ")[1].strip()
+	# 					dependencies.append(dependency)
+	# 		self.dependencies[file] = dependencies
 	
 	 
-	def populate_dependencies_ast(self) -> None:
-		""" Populates the dependencies of the files in the codebase using the ast module
-		"""
-		for file in self.files:
-			dependencies = []
-			with open(file, 'r') as f:
-				try:
-					tree = ast.parse(f.read())
-				except:
-					print(f"Error reading file: {file}")
-					continue
-				for node in ast.walk(tree):
-					if isinstance(node, ast.Import):
-						for alias in node.names:
-							dependencies.append(alias.name)
-					elif isinstance(node, ast.ImportFrom):
-						dependencies.append(node.module)
-			self.dependencies[file] = dependencies
+	# def populate_dependencies_ast(self) -> None:
+	# 	""" Populates the dependencies of the files in the codebase using the ast module
+	# 	"""
+	# 	for file in self.files:
+	# 		dependencies = []
+	# 		with open(file, 'r') as f:
+	# 			try:
+	# 				tree = ast.parse(f.read())
+	# 			except:
+	# 				print(f"Error reading file: {file}")
+	# 				continue
+	# 			for node in ast.walk(tree):
+	# 				if isinstance(node, ast.Import):
+	# 					for alias in node.names:
+	# 						dependencies.append(alias.name)
+	# 				elif isinstance(node, ast.ImportFrom):
+	# 					dependencies.append(node.module)
+	# 		self.dependencies[file] = dependencies
 	
 	def __repr__(self) -> str:
 		""" Prints the CodeBase with files and their dependencies
@@ -139,7 +145,7 @@ class CodeBase:
 				str: The string representation of the CodeBase
 		"""
 		value = f"CodeBase: {self.name}\n"
-		for file in self.files:
+		for file, file_obj in self.fileDictionary.items():
 			try:
 				value += f"{file} -> {self.dependencies[file]}\n"
 			except KeyError:
@@ -158,6 +164,26 @@ class CodeGraph:
 		self.fileSet = set(files)
 		self.nodes = [] # List[Component]
 		self.edges = [] # List[ComponentEdge]
+  
+	def __repr__(self) -> str:
+		""" Prints the graph with nodes and edges
+		"""
+		value = f"CodeBase: {self.codebase.name} Graph with {len(self.nodes)} nodes and {len(self.edges)} edges\n"
+		value += "\tNodes: \n"
+		for node in self.nodes:
+			value += f"{node} -> {self.find_connected_nodes(node)}\n"
+		value += "\tEdges: \n"
+		for edge in self.edges:
+			value += f"{edge}\n"
+		return value
+
+	def get_node_by_id(self, id: int) -> Component:
+		""" Gets a node by its id
+		"""
+		for node in self.nodes:
+			if node.id == id:
+				return node
+		return None
 	
 	def add_node(self, node: Component) -> None:
 		""" Adds a node to the graph
@@ -176,6 +202,8 @@ class CodeGraph:
 		for edge in self.edges:
 			if edge.from_component == node:
 				connected_nodes.append(edge.to_component)
+			elif edge.to_component == node:
+				connected_nodes.append(edge.from_component)
 		return connected_nodes
   
 	def _dfs_build_deps(self, node: ast.AST, parent: Component = None) -> None:
@@ -183,20 +211,22 @@ class CodeGraph:
 		"""
 		if isinstance(node, ast.Import):
 			for alias in node.names:
-				if alias.name in self.fileDictionary:
-					dependency = self.fileDictionary[alias.name]
+				if self.codebase.fileDictionary.__contains__(alias.name):
+					dependency = self.codebase.fileDictionary[alias.name]
 					self.add_edge(ComponentEdge(parent, dependency))
 		elif isinstance(node, ast.ImportFrom):
-			if alias.name in self.fileDictionary:
-				dependency = self.fileDictionary[alias.name]
+			if self.codebase.fileDictionary.__contains__(node.module):
+				dependency =self.codebase.fileDictionary[alias.name]
 				self.add_edge(ComponentEdge(parent, dependency))
 		elif isinstance(node, ast.ClassDef):
 			current_component = Class(node.name, parent, [], ast.unparse(node))
+			self.add_node(current_component)
 			if parent:
 				self.add_edge(ComponentEdge(parent, current_component))
 			parent = current_component
 		elif isinstance(node, ast.FunctionDef):
 			current_component = Function(node.name, parent, [], ast.unparse(node))
+			self.add_node(current_component)
 			if parent:
 				self.add_edge(ComponentEdge(parent, current_component))
 			parent = current_component
@@ -210,6 +240,7 @@ class CodeGraph:
 		the files, classes, and functions in the codebase and their dependencies
 		"""
 		for file in self.codebase.get_files():
+			self.add_node(file)
 			tree = ast.parse(file.raw)
 			self._dfs_build_deps(tree, file)
 		
@@ -226,17 +257,18 @@ os.system(f"git clone {codebase_link} example_codebase")
 os.system("rm -rf example_codebase/.git")
 os.system("rm -rf example_codebase/.gitignore")
 
-examples = CodeBase("MyCodeBase", "example_codebase")
-examples.populate_dependencies()
+examples = CodeBase("MyCodeBase", "small_repo")
+# examples.populate_dependencies()
 print(examples)
 
-examples_ast = CodeBase("MyASTCodeBase", "example_codebase")
-examples_ast.populate_dependencies_ast()
-print(examples_ast)
+# Build a graph from the codebase
+graph = CodeGraph(examples)
+graph.populate_graph()
+print(graph)
 
-print("populate_dependencies and populate_dependencies_ast are the same: ", all(set(examples.get_dependencies(file)) == set(examples_ast.get_dependencies(file)) for file in examples.get_files()))
+# print("populate_dependencies and populate_dependencies_ast are the same: ", all(set(examples.get_dependencies(file)) == set(examples_ast.get_dependencies(file)) for file in examples.get_files()))
 
 # Save examples to a JSON
-import json
-with open('example_codebase.json', 'w') as f:
-	json.dump(examples, f, default=lambda o: o.__dict__, indent=2)
+# import json
+# with open('example_codebase.json', 'w') as f:
+# 	json.dump(examples, f, default=lambda o: o.__dict__, indent=2)
