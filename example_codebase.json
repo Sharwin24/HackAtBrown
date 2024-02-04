@@ -1,0 +1,227 @@
+{
+  "name": "MyCodeBase",
+  "files": [
+    "example_codebase\\setup.py",
+    "example_codebase\\graphcast\\autoregressive.py",
+    "example_codebase\\graphcast\\casting.py",
+    "example_codebase\\graphcast\\checkpoint.py",
+    "example_codebase\\graphcast\\checkpoint_test.py",
+    "example_codebase\\graphcast\\data_utils.py",
+    "example_codebase\\graphcast\\data_utils_test.py",
+    "example_codebase\\graphcast\\deep_typed_graph_net.py",
+    "example_codebase\\graphcast\\graphcast.py",
+    "example_codebase\\graphcast\\grid_mesh_connectivity.py",
+    "example_codebase\\graphcast\\grid_mesh_connectivity_test.py",
+    "example_codebase\\graphcast\\icosahedral_mesh.py",
+    "example_codebase\\graphcast\\icosahedral_mesh_test.py",
+    "example_codebase\\graphcast\\losses.py",
+    "example_codebase\\graphcast\\model_utils.py",
+    "example_codebase\\graphcast\\normalization.py",
+    "example_codebase\\graphcast\\predictor_base.py",
+    "example_codebase\\graphcast\\rollout.py",
+    "example_codebase\\graphcast\\solar_radiation.py",
+    "example_codebase\\graphcast\\solar_radiation_test.py",
+    "example_codebase\\graphcast\\typed_graph.py",
+    "example_codebase\\graphcast\\typed_graph_net.py",
+    "example_codebase\\graphcast\\xarray_jax.py",
+    "example_codebase\\graphcast\\xarray_jax_test.py",
+    "example_codebase\\graphcast\\xarray_tree.py",
+    "example_codebase\\graphcast\\xarray_tree_test.py"
+  ],
+  "dependencies": {
+    "example_codebase\\setup.py": [
+      "setuptools"
+    ],
+    "example_codebase\\graphcast\\autoregressive.py": [
+      "typing",
+      "absl",
+      "graphcast",
+      "graphcast",
+      "graphcast",
+      "haiku",
+      "jax",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\casting.py": [
+      "contextlib",
+      "typing",
+      "chex",
+      "graphcast",
+      "haiku",
+      "jax",
+      "jax.numpy",
+      "numpy",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\checkpoint.py": [
+      "dataclasses",
+      "io",
+      "types",
+      "typing",
+      "numpy"
+    ],
+    "example_codebase\\graphcast\\checkpoint_test.py": [
+      "dataclasses",
+      "io",
+      "typing",
+      "absl.testing",
+      "graphcast",
+      "numpy"
+    ],
+    "example_codebase\\graphcast\\data_utils.py": [
+      "typing",
+      "graphcast",
+      "numpy",
+      "pandas",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\data_utils_test.py": [
+      "datetime",
+      "absl.testing",
+      "absl.testing",
+      "graphcast",
+      "numpy",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\deep_typed_graph_net.py": [
+      "typing",
+      "graphcast",
+      "graphcast",
+      "haiku",
+      "jax",
+      "jax.numpy",
+      "jraph"
+    ],
+    "example_codebase\\graphcast\\graphcast.py": [
+      "typing",
+      "chex",
+      "graphcast",
+      "graphcast",
+      "graphcast",
+      "graphcast",
+      "graphcast",
+      "graphcast",
+      "graphcast",
+      "graphcast",
+      "jax.numpy",
+      "jraph",
+      "numpy",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\grid_mesh_connectivity.py": [
+      "graphcast",
+      "numpy",
+      "scipy",
+      "trimesh"
+    ],
+    "example_codebase\\graphcast\\grid_mesh_connectivity_test.py": [
+      "absl.testing",
+      "graphcast",
+      "graphcast",
+      "numpy"
+    ],
+    "example_codebase\\graphcast\\icosahedral_mesh.py": [
+      "itertools",
+      "typing",
+      "numpy",
+      "scipy.spatial"
+    ],
+    "example_codebase\\graphcast\\icosahedral_mesh_test.py": [
+      "absl.testing",
+      "absl.testing",
+      "chex",
+      "graphcast",
+      "numpy"
+    ],
+    "example_codebase\\graphcast\\losses.py": [
+      "typing",
+      "graphcast",
+      "numpy",
+      "typing_extensions",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\model_utils.py": [
+      "typing",
+      "numpy",
+      "scipy.spatial",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\normalization.py": [
+      "logging",
+      "typing",
+      "graphcast",
+      "graphcast",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\predictor_base.py": [
+      "abc",
+      "typing",
+      "graphcast",
+      "graphcast",
+      "jax.numpy",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\rollout.py": [
+      "typing",
+      "absl",
+      "chex",
+      "dask.array",
+      "graphcast",
+      "jax",
+      "numpy",
+      "typing_extensions",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\solar_radiation_test.py": [
+      "timeit",
+      "typing",
+      "absl",
+      "absl.testing",
+      "absl.testing",
+      "graphcast",
+      "numpy",
+      "pandas",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\typed_graph.py": [
+      "typing"
+    ],
+    "example_codebase\\graphcast\\typed_graph_net.py": [
+      "typing",
+      "graphcast",
+      "jax.numpy",
+      "jax.tree_util",
+      "jraph"
+    ],
+    "example_codebase\\graphcast\\xarray_jax.py": [
+      "collections",
+      "contextlib",
+      "contextvars",
+      "typing",
+      "jax",
+      "jax.numpy",
+      "numpy",
+      "tree",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\xarray_jax_test.py": [
+      "absl.testing",
+      "chex",
+      "graphcast",
+      "jax",
+      "jax.numpy",
+      "numpy",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\xarray_tree.py": [
+      "typing",
+      "xarray"
+    ],
+    "example_codebase\\graphcast\\xarray_tree_test.py": [
+      "absl.testing",
+      "graphcast",
+      "numpy",
+      "xarray"
+    ]
+  }
+}
