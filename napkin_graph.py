@@ -303,5 +303,4 @@ print(graph)
 with open('example_codebase.json', 'w') as f:
   # Get id to raw dict
 	id_to_raw = graph.create_id_to_raw()
-	print(id_to_raw)
-	json.dump(id_to_raw, f)
+	json.dump(id_to_raw, f, indent=4, sort_keys=True)
