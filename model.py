@@ -18,16 +18,6 @@ class Transformer:
         logits = outputs.logits
         return logits
 
-    def embed(self, texts):
-        # Tokenization: Encode the inputs
-        inputs = self.tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
-        # Model Inference: Get the embeddings
-        with torch.no_grad():
-            outputs = self.model(**inputs)
-        # Get the last hidden states
-        embeddings = outputs.last_hidden_state
-        return embeddings
-
 class Embedder:
     def __init__(self, model_name):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
