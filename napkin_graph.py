@@ -203,7 +203,6 @@ class CodeGraph:
 				self.add_edge(ComponentEdge(parent, dependency))
 		elif isinstance(node, ast.ClassDef):
 			current_component = Class(node.name, parent, [], ast.unparse(node))
-			print(f"adding {node.name} to funcDictionary")
 			self.codebase.funcDictionary[node.name] = current_component
 			self.add_node(current_component)
 			if parent:
@@ -211,27 +210,16 @@ class CodeGraph:
 			parent = current_component
 		elif isinstance(node, ast.FunctionDef):
 			current_component = Function(node.name, parent, [], ast.unparse(node))
-			print(f"adding {node.name} to funcDictionary")
 			self.codebase.funcDictionary[node.name] = current_component
 			self.add_node(current_component)
 			if parent:
 				self.add_edge(ComponentEdge(parent, current_component))
 			parent = current_component
-		elif isinstance(node, ast.Call):
-			if isinstance(node.func, ast.Name):
-				funcname = node.func.id
-			elif isinstance(node.func, ast.Attribute):
-				funcname = node.func.attr
-			print("funcname: ", funcname)
-			if self.codebase.funcDictionary.__contains__(funcname):
-				print("funcname in funcDictionary: ", self.codebase.funcDictionary[funcname])
-				dependency = self.codebase.funcDictionary[funcname]
-				self.add_edge(ComponentEdge(parent, dependency))
 	
 		for child in ast.iter_child_nodes(node):
 			self._dfs_build_deps(child, parent)
    
-  
+   
 	def populate_graph(self) -> None:
 		""" Populates the graph with component nodes and edges representing
 		the files, classes, and functions in the codebase and their dependencies
@@ -240,6 +228,32 @@ class CodeGraph:
 			self.add_node(file)
 			tree = ast.parse(file.raw)
 			self._dfs_build_deps(tree, file)
+   
+   
+	def _dfs_build_func_calls(self, node: ast.AST, parent: Component = None) -> None:
+		""" Recursively builds the function call edges of the graph
+		"""
+		if isinstance(node, ast.ClassDef) or isinstance(node, ast.FunctionDef):
+			parent = self.codebase.funcDictionary[node.name]
+		elif isinstance(node, ast.Call):
+			funcname = ""
+			if isinstance(node.func, ast.Name):
+				funcname = node.func.id
+			elif isinstance(node.func, ast.Attribute):
+				funcname = node.func.attr
+			if self.codebase.funcDictionary.__contains__(funcname):
+				dependency = self.codebase.funcDictionary[funcname]
+				self.add_edge(ComponentEdge(parent, dependency))
+	
+		for child in ast.iter_child_nodes(node):
+			self._dfs_build_func_calls(child, parent)
+   
+	def populate_func_call_edges(self) -> None:
+		""" Populates the graph with edges representing function calls
+		"""
+		for file in self.codebase.get_files():
+			tree = ast.parse(file.raw)
+			self._dfs_build_func_calls(tree)
    
 	def delete_small_nodes(self, threshold: int = 300) -> None:
 		""" Deletes nodes with less than threshold connections
@@ -272,13 +286,17 @@ os.system(f"git clone {codebase_link} example_codebase")
 os.system("rm -rf example_codebase/.git")
 os.system("rm -rf example_codebase/.gitignore")
 
-examples = CodeBase("MyCodeBase", "example_codebase")
+examples = CodeBase("MyCodeBase", "small_repo")
 print(examples)
 
 # Build a graph from the codebase
 graph = CodeGraph(examples)
 graph.populate_graph()
-graph.delete_small_nodes()
+print("BEFORE FUNCTION CALLS")
+print(graph)
+print(graph.codebase.funcDictionary)
+graph.populate_func_call_edges()
+print("AFTER FUNCTION CALLS")
 print(graph)
 
 # Save examples to a JSON

@@ -1,9 +1,9 @@
-from large_file import LargeClass
+from large_file import Larger
 
 class SmallClass:
   
 	def __init__(self):
-		self.large = LargeClass()
+		self.large = Larger()
 
 	def smallFunction(self):
 		pass
