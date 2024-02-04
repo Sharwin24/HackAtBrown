@@ -3,6 +3,7 @@ from model import Embedder
 import torch
 from transformers import AutoTokenizer, AutoModel
 import os
+import json
 
 #embedding repo per file
 
@@ -18,6 +19,24 @@ embeddings_path = '/home/iyer.ris/HackAtBrown/GraphCastEmbeddings'
 
 # Create the directory if it doesn't exist
 os.makedirs(embeddings_path, exist_ok=True)
+
+# Loop through the JSON and get the embeddings
+
+# Read example_codebase.json
+with open('example_codebase.json', 'r', encoding='utf-8') as file:
+    nodeIdToRawText = json.load(file)
+    
+for nodeId, rawText in nodeIdToRawText.items():
+    # Get embeddings for the raw text
+    embeddings = embedder.embed(rawText)
+    
+    embeddingMatrix = torch.vstack(embeddingMatrix, embeddings)
+    
+    # Define the path to save the embeddings
+    # embeddings_file_path = os.path.join(embeddings_path, nodeId + '.pt')
+    
+    # Save the embeddings
+    torch.save(embeddings, embeddings_file_path)
 
 # Loop through each file in the directory
 for filename in os.listdir(directory_path):
