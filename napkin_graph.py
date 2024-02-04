@@ -219,7 +219,6 @@ class CodeGraph:
 		for child in ast.iter_child_nodes(node):
 			self._dfs_build_deps(child, parent)
    
-   
 	def populate_graph(self) -> None:
 		""" Populates the graph with component nodes and edges representing
 		the files, classes, and functions in the codebase and their dependencies
@@ -228,7 +227,6 @@ class CodeGraph:
 			self.add_node(file)
 			tree = ast.parse(file.raw)
 			self._dfs_build_deps(tree, file)
-   
    
 	def _dfs_build_func_calls(self, node: ast.AST, parent: Component = None) -> None:
 		""" Recursively builds the function call edges of the graph
@@ -256,7 +254,7 @@ class CodeGraph:
 			self._dfs_build_func_calls(tree)
    
 	def delete_small_nodes(self, threshold: int = 300) -> None:
-		""" Deletes nodes with less than threshold connections
+		""" Deletes nodes with raw code less than threshold
 		"""
 		for node in self.nodes:
 			if len(node.raw) < threshold:
@@ -264,7 +262,30 @@ class CodeGraph:
 				for edge in self.edges:
 					if edge.from_component == node or edge.to_component == node:
 						self.edges.remove(edge)
-  
+      
+	def split_large_nodes(self, threshold: int = 1800) -> None:
+		""" Splits nodes with raw code more than threshold into 2 smaller nodes
+		"""
+		for node in self.nodes:
+			if len(node.raw) > threshold:
+				# current_component_type = type(node)
+				# if current_component_type == File:
+				# 	new_node = File(node.name, node.parent, node.children, node.raw[:len(node.raw)//2], node.path, node.dependencies)
+				# elif current_component_type == Class:
+				# 	new_node = Class(node.name, node.parent, node.children, node.raw[:len(node.raw)//2])
+				# elif current_component_type == Function:
+				# 	new_node = Function(node.name, node.parent, node.children, node.raw[:len(node.raw)//2])
+				# self.add_node(new_node)
+				# self.add_edge(ComponentEdge(node, new_node))
+				# # Edit the original node to have the first half of the raw code
+				# node.raw = node.raw[len(node.raw)//2:]
+				connected_nodes = self.find_connected_nodes(node)
+				# Connect connected_nodes to each other
+				for i, connected_node in enumerate(connected_nodes):
+					if i < len(connected_nodes) - 1:
+						self.add_edge(ComponentEdge(connected_node, connected_nodes[i+1]))
+				self.nodes.remove(node)
+        
 	def create_id_to_raw(self) -> 'dict[int, str]':
 		""" Creates a dictionary mapping node ids to their raw code
 		"""
@@ -286,17 +307,15 @@ os.system(f"git clone {codebase_link} example_codebase")
 os.system("rm -rf example_codebase/.git")
 os.system("rm -rf example_codebase/.gitignore")
 
-examples = CodeBase("MyCodeBase", "small_repo")
-print(examples)
+examples = CodeBase("MyCodeBase", "example_codebase")
+# print(examples)
 
 # Build a graph from the codebase
 graph = CodeGraph(examples)
 graph.populate_graph()
-print("BEFORE FUNCTION CALLS")
-print(graph)
-print(graph.codebase.funcDictionary)
+graph.delete_small_nodes()
 graph.populate_func_call_edges()
-print("AFTER FUNCTION CALLS")
+graph.split_large_nodes()
 print(graph)
 
 # Save examples to a JSON
