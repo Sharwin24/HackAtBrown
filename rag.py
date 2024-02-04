@@ -43,7 +43,6 @@ class RetrievalAugmentedGeneration:
 		self.augmentationNodesById.append(newStartNode)
 		self.graph_walk(newStartNode)
 
-
 # Create CodeBase Object
 graphcastCodeBase = CodeBase("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
 
@@ -52,8 +51,9 @@ graphcastGraph = CodeGraph(graphcastCodeBase)
 graphcastGraph.populate_graph()
 graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
-graphcastGraph.split_large_nodes()
+graphcastGraph.remove_large_nodes()
 
 # Usage Example
 prompt = "How to read a file in Python?"
 RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
+print(RAG.graph_walk(RAG.getMostSimilarNode()))

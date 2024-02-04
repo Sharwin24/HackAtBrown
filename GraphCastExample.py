@@ -14,7 +14,6 @@ print(f"Using device: {device}")
 
 # Initialize the embedder
 embedder = Embedder("microsoft/codebert-base")
-embedder.model.to(device)
 
 # Directory containing .py files
 directory_path = '/home/iyer.ris/graphcast/graphcast'

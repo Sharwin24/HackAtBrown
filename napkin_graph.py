@@ -289,8 +289,6 @@ class CodeGraph:
 		for node in self.nodes:
 			if len(node.raw) > threshold:
 				connected_nodes = self.find_connected_nodes(node)
-				print(f"connected to {len(connected_nodes)} nodes")
-				print(f"{node=}, {type(node)=}")
 				# Connect connected_nodes to each other
 				for i in range(len(connected_nodes)):
 					for j in range(i+1, len(connected_nodes)):
