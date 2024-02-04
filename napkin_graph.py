@@ -5,6 +5,7 @@
 
 import os
 import sys
+import ast
 
 class CodeBase:
 	""" CodeBase is a representation of the codebase of a project, containing all files and their dependencies
@@ -85,8 +86,27 @@ class CodeBase:
 					continue
 				for line in lines:
 					if line.startswith("import") or line.startswith("from"):
-						dependency = line.split(" ")[1]
+						dependency = line.split(" ")[1].strip()
 						dependencies.append(dependency)
+			self.dependencies[file] = dependencies
+   
+	def populate_dependencies_ast(self) -> None:
+		""" Populates the dependencies of the files in the codebase using the ast module
+		"""
+		for file in self.files:
+			dependencies = []
+			with open(file, 'r') as f:
+				try:
+					tree = ast.parse(f.read())
+				except:
+					print(f"Error reading file: {file}")
+					continue
+				for node in ast.walk(tree):
+					if isinstance(node, ast.Import):
+						for alias in node.names:
+							dependencies.append(alias.name)
+					elif isinstance(node, ast.ImportFrom):
+						dependencies.append(node.module)
 			self.dependencies[file] = dependencies
 	
 	def __repr__(self) -> str:
@@ -137,6 +157,12 @@ os.system("rm -rf example_codebase/.gitignore")
 examples = CodeBase("MyCodeBase", "example_codebase")
 examples.populate_dependencies()
 print(examples)
+
+examples_ast = CodeBase("MyCodeBase", "example_codebase")
+examples_ast.populate_dependencies_ast()
+print(examples_ast)
+
+print("populate_dependencies and populate_dependencies_ast are the same: ", all(set(examples.get_dependencies(file)) == set(examples_ast.get_dependencies(file)) for file in examples.get_files()))
 
 # Save examples to a JSON
 import json
