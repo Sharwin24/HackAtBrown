@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 from openai import OpenAI
 import os
 import json

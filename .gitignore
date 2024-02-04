@@ -2,3 +2,4 @@ node_modules/
 .vscode/
 __pycache__/
 example_codebase/
+key.txt
