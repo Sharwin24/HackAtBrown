@@ -12,6 +12,7 @@ from dataclasses import dataclass
 class Component:
 	""" The base class for all components of the codebase
 	"""
+	id: int
 	name: str
 	parent: 'Component' = None
 	children: 'list[Component]' = None
@@ -19,6 +20,9 @@ class Component:
 
 	def __repr__(self) -> str:
 		return f"{self.name}"
+
+	def __hash__(self) -> int:
+		return hash(self.id, self.name)
 
 @dataclass
 class File(Component):
@@ -36,11 +40,24 @@ class Class(Component):
 	""" The class for a class in the codebase
 	"""
 	pass
-	
 
 @dataclass
 class Function(Component):
 	pass
+
+@dataclass
+class ComponentEdge:
+	""" The class for an edge between two components in the codebase
+	"""
+	from_component: Component
+	to_component: Component
+	weight: int = 1
+
+	def __repr__(self) -> str:
+		return f"{self.from_component} -> {self.to_component}"
+
+	def __hash__(self) -> int:
+		return hash((self.from_component, self.to_component))
 
 class CodeBase:
 	""" CodeBase is a representation of the codebase of a project, containing all files and their dependencies
@@ -185,6 +202,17 @@ class CodeGraph:
 		if not files or len(files) == 0:
 			raise ValueError("The codebase is empty")
 		self.nodes = [] # List[Component]
+		self.edges = [] # List[ComponentEdge]
+  
+	def add_node(self, node: Component) -> None:
+		""" Adds a node to the graph
+		"""
+		self.nodes.append(node)
+	
+	def add_edge(self, edge: ComponentEdge) -> None:
+		""" Adds an edge to the graph
+		"""
+		self.edges.append(edge)
 
 
 # Example usage
