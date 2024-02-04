@@ -328,22 +328,21 @@ class CodeGraph:
 			id_to_raw = self.create_id_to_raw()
 			json.dump(id_to_raw, f, indent=4, sort_keys=True)
    
+	def create_index_to_json_dict(self) -> 'tuple[dict[int, int], dict[int, int]]':		
+		""" Creates a dictionary mapping node ids to their index
+		"""
+		id_to_json = {} # Index to JSON Data (node id)
+		json_to_id = {} # JSON Data (node id) to Index
+		for i, node in enumerate(self.nodes):
+			id_to_json[i] = node.id
+			json_to_id[node.id] = i
+		return (id_to_json, json_to_id)
+   
 	def delete_edges_to_non_existent_nodes(self) -> None:
 		""" Deletes edges to non-existent nodes
 		"""
-		true_length = self.get_true_length()
+		true_length = len(self.nodes)
 		for edge in self.edges:
 			if edge.from_component != None and edge.to_component != None:
 				if edge.from_component.id >= true_length or edge.to_component.id >= true_length:
 					self.edges.remove(edge)
-   
-	def reindex_graph(self) -> None:
-		""" Reindexes the graph to have node ids from 0 to n
-		"""
-		for i in range(len(self.nodes)):
-			self.nodes[i].id = i
-
-	def get_true_length(self) -> int:
-		""" Gets the true length of the graph
-		"""
-		return len(self.nodes)

@@ -1,7 +1,6 @@
 # Napkin ![napkin](images/napkin_logo.png)
 A fast, lightweight graph retrieval-augmented generation tool for navigating codebases. 
 
-
 ## 💡 Inspiration
 As developers, we are always exploring new projects and open-source repositories. However, the complexity and scale of these codebases serve as a major barrier to entry even for the most experienced developers. Even after spending countless hours reading over files, documentations, and (hopefully solved) issues, it's easy to find yourself lost and intimidated. We wanted to create a tool that would help developers navigate these codebases more effectively, answering questions and providing context on both specific and broad aspects of the codebase.
 
