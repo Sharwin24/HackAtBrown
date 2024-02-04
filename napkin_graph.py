@@ -69,10 +69,12 @@ class ComponentEdge:
 class CodeBase:
 	""" CodeBase is a representation of the codebase of a project, containing all files and their dependencies
 	"""
-	def __init__(self, name: str, codebase_directory: str) -> None:
+	def __init__(self, name: str, codebase_directory: str, repoLink: str = "", skipCloning: bool = False) -> None:
 		self.name = name
 		self.fileDictionary = {} # dict[str, File] - file name to file object
 		self.funcDictionary = {} # dict[str, Function] - function name to function object
+		if repoLink != "" and not skipCloning:
+			self.clone_repository(repoLink, codebase_directory)
 		# Add all files in the subdirectories of the codebase to the list of files
 		for root, dirs, files in os.walk(codebase_directory):
 			for file in files:
@@ -100,6 +102,24 @@ class CodeBase:
 			return self.dependencies[file]
 		except KeyError:
 			return []
+ 
+	def clone_repository(self, link: str, cloneDir: str = "example_codebase") -> None:
+		""" Clones a repository from a link
+
+		Args:
+				link (str): The link to the repository
+				cloneDir (str, optional): The directory to clone the repository to. Defaults to "example_codebase".
+		"""
+		# Remove the existing codebase if it exists
+		if link == "" or link == None:
+			return
+		os.system("rm -rf " + cloneDir)
+		# Clone the codebase to a directory
+		os.system(f"git clone {link} " + cloneDir)
+		# Delete the .git directory and other unnecessary files
+		os.system("rm -rf " + cloneDir + "/.git")
+		os.system("rm -rf " + cloneDir + "/.gitignore")
+		print(f"Cloned repository from {link} to {cloneDir}")
 	
 	def __repr__(self) -> str:
 		""" Prints the CodeBase with files and their dependencies
@@ -293,33 +313,3 @@ class CodeGraph:
 		for node in self.nodes:
 			id_to_raw[node.id] = node.raw
 		return id_to_raw
-
-
-# Example usage
-
-# Get the codebase
-codebase_link = "https://github.com/google-deepmind/graphcast.git"
-# Clear the example if it already exists
-os.system("rm -rf example_codebase")
-# Clone the codebase to a directory
-os.system(f"git clone {codebase_link} example_codebase")
-# Delete the .git directory and other unnecessary files
-os.system("rm -rf example_codebase/.git")
-os.system("rm -rf example_codebase/.gitignore")
-
-examples = CodeBase("MyCodeBase", "example_codebase")
-# print(examples)
-
-# Build a graph from the codebase
-graph = CodeGraph(examples)
-graph.populate_graph()
-graph.delete_small_nodes()
-graph.populate_func_call_edges()
-graph.split_large_nodes()
-print(graph)
-
-# Save examples to a JSON
-with open('example_codebase.json', 'w') as f:
-  # Get id to raw dict
-	id_to_raw = graph.create_id_to_raw()
-	json.dump(id_to_raw, f, indent=4, sort_keys=True)

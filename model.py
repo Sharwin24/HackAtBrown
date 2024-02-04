@@ -3,10 +3,6 @@ import torch
 ## EMBEDDING CLASS
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 
-
-
-
-
 class Transformer:
     def __init__(self, model_name):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -21,8 +17,6 @@ class Transformer:
 
         logits = outputs.logits
         return logits
-
-
 
 class Embedder:
     def __init__(self, model_name):
