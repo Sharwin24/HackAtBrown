@@ -11,7 +11,13 @@ class CodeBase:
 	"""
 	def __init__(self, name: str, codebase_directory: str) -> None:
 		self.name = name
-		self.files = [f for f in os.listdir(codebase_directory) if f.endswith('.py')]
+		self.files = [] # list[str]
+		# self.files = [f for f in os.listdir(codebase_directory) if f.endswith('.py')]
+		# Add all files in the subdirectories of the codebase to the list of files
+		for root, dirs, files in os.walk(codebase_directory):
+			for file in files:
+				if file.endswith('.py'):
+					self.files.append(os.path.join(root, file))
 		self.dependencies = {} # dict[file, list[dependency]]
   
 	def add_file(self, file: str, dependencies: 'list[str]') -> None:
@@ -87,7 +93,10 @@ class CodeBase:
 		"""
 		value = f"CodeBase: {self.name}\n"
 		for file in self.files:
-			value += f"{file} -> {self.dependencies[file]}\n"
+			try:
+				value += f"{file} -> {self.dependencies[file]}\n"
+			except KeyError:
+				value += f"{file}\n"
 		return value
 
 class CodeGraph:
@@ -110,6 +119,6 @@ class CodeGraph:
 
 
 # Example usage
-codebase = CodeBase("MyCodeBase")
-codebase.add_file("file1", ["file2", "file3"])
-print(codebase)
+examples = CodeBase("MyCodeBase", "example_codebase/")
+examples.populate_dependencies()
+print(examples)
