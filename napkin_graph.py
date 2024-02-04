@@ -26,7 +26,12 @@ class Component():
 		return f"{self.name}"
 
 	def __hash__(self) -> int:
-		return hash((self.id, self.name))
+		return hash((self.id))
+
+	def __eq__(self, other: 'Component') -> bool:
+		if not isinstance(other, Component):
+			return False
+		return self.id == other.id
 
 class File(Component):
 	""" The class for a file in the codebase
@@ -40,9 +45,6 @@ class File(Component):
 			self.raw = open(self.path, 'r').read()
 		except UnicodeDecodeError:
 			pass
-  
-	def __hash__(self) -> int:
-		return hash(self.name)
 
 class Class(Component):
 	""" The class for a class in the codebase
@@ -65,6 +67,11 @@ class ComponentEdge:
 
 	def __hash__(self) -> int:
 		return hash((self.from_component, self.to_component))
+
+	def __eq__(self, __value: object) -> bool:
+		if not isinstance(__value, ComponentEdge):
+			return False
+		return self.from_component == __value.from_component and self.to_component == __value.to_component
 
 class CodeBase:
 	""" CodeBase is a representation of the codebase of a project, containing all files and their dependencies
@@ -198,7 +205,7 @@ class CodeGraph:
 				print(f"Index out of range for edge {edge} with from_component ID {edge.from_component.id} and to_component ID {edge.to_component.id}")
 		return adjacency_matrix
   
-	def find_connected_nodes(self, node: Component) -> 'set[Component]':
+	def find_connected_nodes(self, node: Component) -> 'list[Component]':
 		""" Finds all nodes connected to a given node
 		"""
 		connected_nodes = []
@@ -207,7 +214,7 @@ class CodeGraph:
 				connected_nodes.append(edge.to_component)
 			elif edge.to_component == node:
 				connected_nodes.append(edge.from_component)
-		return connected_nodes
+		return list(set(connected_nodes))
   
 	def _dfs_build_deps(self, node: ast.AST, parent: Component = None) -> None:
 		""" Recursively builds the dependencies of a component node
@@ -289,8 +296,6 @@ class CodeGraph:
 		for node in self.nodes:
 			if len(node.raw) > threshold:
 				connected_nodes = self.find_connected_nodes(node)
-				print(f"connected to {len(connected_nodes)} nodes")
-				print(f"{node=}, {type(node)=}")
 				# Connect connected_nodes to each other
 				for i in range(len(connected_nodes)):
 					for j in range(i+1, len(connected_nodes)):
@@ -322,3 +327,23 @@ class CodeGraph:
 			# Get id to raw dict
 			id_to_raw = self.create_id_to_raw()
 			json.dump(id_to_raw, f, indent=4, sort_keys=True)
+   
+	def delete_edges_to_non_existent_nodes(self) -> None:
+		""" Deletes edges to non-existent nodes
+		"""
+		true_length = self.get_true_length()
+		for edge in self.edges:
+			if edge.from_component != None and edge.to_component != None:
+				if edge.from_component.id >= true_length or edge.to_component.id >= true_length:
+					self.edges.remove(edge)
+   
+	def reindex_graph(self) -> None:
+		""" Reindexes the graph to have node ids from 0 to n
+		"""
+		for i in range(len(self.nodes)):
+			self.nodes[i].id = i
+
+	def get_true_length(self) -> int:
+		""" Gets the true length of the graph
+		"""
+		return len(self.nodes)

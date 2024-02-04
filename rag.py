@@ -18,8 +18,9 @@ class RetrievalAugmentedGeneration:
 		self.augmentationNodesById = []
 
 	def getMostSimilarNode(self) -> int:
-		maxSimilarity = torch.max(self.similarities)
-		return torch.where(self.similarities == maxSimilarity)[0]
+		""" Returns the most similar node by id to the similarities vector
+		"""
+		return torch.argmax(self.similarities)
 
 	def reset_augmentation(self) -> None:
 		self.augmentationNodesById = []
@@ -36,13 +37,11 @@ class RetrievalAugmentedGeneration:
 		# Get neighbors and find the most similar one by cosine similarity
 		starting_node = self.knowledgeGraph.get_node_by_id(start_node_id)
 		neighbors = self.knowledgeGraph.find_connected_nodes(starting_node)
-		neighborsById = [node.id for node in neighbors]
+		neighborsById = [node.id for node in neighbors if node != None and node.id < self.knowledgeGraph.get_true_length()]
 		scores = self.similarities[neighborsById]
-		maxScore = torch.max(scores)
-		newStartNode = torch.where(scores == maxScore)[0]
+		newStartNode = neighborsById[torch.argmax(scores)]
 		self.augmentationNodesById.append(newStartNode)
 		self.graph_walk(newStartNode)
-
 
 # Create CodeBase Object
 graphcastCodeBase = CodeBase("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
@@ -52,8 +51,12 @@ graphcastGraph = CodeGraph(graphcastCodeBase)
 graphcastGraph.populate_graph()
 graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
-graphcastGraph.split_large_nodes()
+graphcastGraph.remove_large_nodes()
+graphcastGraph.delete_edges_to_non_existent_nodes()
+graphcastGraph.reindex_graph()
+# print(graphcastGraph)
 
 # Usage Example
 prompt = "How to read a file in Python?"
 RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
+print(RAG.graph_walk(RAG.getMostSimilarNode()))
