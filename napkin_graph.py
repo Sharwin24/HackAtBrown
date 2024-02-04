@@ -9,15 +9,10 @@ import sys
 class CodeBase:
 	""" CodeBase is a representation of the codebase of a project, containing all files and their dependencies
 	"""
-	def __init__(self, name: str) -> None:
+	def __init__(self, name: str, codebase_directory: str) -> None:
 		self.name = name
-		# list of files in the codebase with correct file extension
-		self.files = []
-		all_files = os.listdir()
-		for file in all_files:
-			if file.endswith(".py"):
-				self.files.append(file)
-		self.dependencies = {} # {File: list[str]}
+		self.files = [f for f in os.listdir(codebase_directory) if f.endswith('.py')]
+		self.dependencies = {} # dict[file, list[dependency]]
   
 	def add_file(self, file: str, dependencies: 'list[str]') -> None:
 		""" Adds a file to the codebase with its dependencies
