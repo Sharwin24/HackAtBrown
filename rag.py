@@ -14,18 +14,20 @@ class RetrievalAugmentedGeneration:
 		self.promptEmbedding = self.embeddingAgent.embed(prompt).to(self.device)
 		self.knowledgeGraph = knowledgeGraph
 		self.similarities = torch.cosine_similarity(self.codebaseEmbeddingVector, self.promptEmbedding).to(self.device)
-		self.walkThreshold = 0.8
+		self.walkThreshold = 0.9
 		self.augmentationNodesById = []
+		self.indexToNodeID, self.nodeIDToIndex = self.knowledgeGraph.create_index_to_json_dict()
 
 	def getMostSimilarNode(self) -> int:
 		""" Returns the most similar node by id to the similarities vector
 		"""
-		return torch.argmax(self.similarities)
+		print(f"Torch.argmax {torch.argmax(self.similarities).item()}")
+		return self.nodeIDToIndex[torch.argmax(self.similarities).item()]
 
 	def reset_augmentation(self) -> None:
 		self.augmentationNodesById = []
 
-	def graph_walk(self, start_node_id: int) -> None:
+	def graph_walk(self, start_node_id: int):
 		""" Walks the graph to find the most similar nodes
 		
 		Args:
@@ -37,9 +39,20 @@ class RetrievalAugmentedGeneration:
 		# Get neighbors and find the most similar one by cosine similarity
 		starting_node = self.knowledgeGraph.get_node_by_id(start_node_id)
 		neighbors = self.knowledgeGraph.find_connected_nodes(starting_node)
-		neighborsById = [node.id for node in neighbors if node != None and node.id < self.knowledgeGraph.get_true_length()]
+		neighborsById = []
+		for node in neighbors:
+			if node != None:
+				try:
+					neighborsById.append(self.nodeIDToIndex[node.id])
+				except KeyError:
+					continue
 		scores = self.similarities[neighborsById]
-		newStartNode = neighborsById[torch.argmax(scores)]
+		maxScore = torch.max(scores)
+		newStartNode = 0
+		for i, _ in enumerate(scores):
+			if self.similarities[i] == maxScore:
+				newStartNode = self.indexToNodeID[i]
+				break
 		self.augmentationNodesById.append(newStartNode)
 		self.graph_walk(newStartNode)
 
@@ -53,7 +66,7 @@ graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
 graphcastGraph.delete_edges_to_non_existent_nodes()
-graphcastGraph.reindex_graph()
+# graphcastGraph.create_id_to_raw_json()
 # print(graphcastGraph)
 
 # Usage Example
