@@ -32,6 +32,13 @@ class Embedder:
         # Get the last hidden states
         embeddings = outputs.last_hidden_state
         return embeddings
+    def train(self, texts):
+         # Tokenization: Encode the inputs
+        inputs = self.tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
+        # Model Inference: Get the embeddings
+        outputs = self.model(**inputs)
+        # Get the last hidden states
+        embeddings = outputs.last_hidden_state
 
 # # Usage Example
 # embedder = Embedder("microsoft/codebert-base")
