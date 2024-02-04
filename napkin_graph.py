@@ -6,24 +6,20 @@
 import os
 import sys
 
-class File:
-	""" File is a representation of a file in a codebase
-	"""
-	def __init__(self, name: str, extension: str) -> None:
-		self.name = name
-		self.extension = extension
-  
-	def __str__(self) -> str:
-		return f"{self.name}.{self.extension}"
-
 class CodeBase:
 	""" CodeBase is a representation of the codebase of a project, containing all files and their dependencies
 	"""
-	def __init__(self) -> None:
-		self.files = [] # list[File]
+	def __init__(self, name: str) -> None:
+		self.name = name
+		# list of files in the codebase with correct file extension
+		self.files = []
+		all_files = os.listdir()
+		for file in all_files:
+			if file.endswith(".py"):
+				self.files.append(file)
 		self.dependencies = {} # {File: list[str]}
   
-	def add_file(self, file: File or str, dependencies: 'list[File]' or 'list[str]') -> None:
+	def add_file(self, file: str, dependencies: 'list[str]') -> None:
 		""" Adds a file to the codebase with its dependencies
   
 		Args:
@@ -33,7 +29,7 @@ class CodeBase:
 		self.files.append(file)
 		self.dependencies[file] = dependencies
   
-	def remove_file(self, file: File or str) -> None:
+	def remove_file(self, file: str) -> None:
 		""" Removes a file from the codebase
 
 		Args:
@@ -41,7 +37,7 @@ class CodeBase:
 		"""
 		self.files.remove(file)
   
-	def add_dependency(self, file: File or str, dependency: File or str) -> None:
+	def add_dependency(self, file: str, dependency: str) -> None:
 		""" Add a dependency to a file
 
 		Args:
@@ -50,7 +46,7 @@ class CodeBase:
 		"""
 		self.dependencies[file].append(dependency)
   
-	def remove_dependency(self, file: File or str, dependency: File or str) -> None:
+	def remove_dependency(self, file: str, dependency: str) -> None:
 		""" Remove a dependency from a file
 
 		Args:
@@ -67,37 +63,58 @@ class CodeBase:
 		"""
 		return self.files
 
-	def get_dependencies(self, file: File or str) -> 'list[str]':
+	def get_dependencies(self, file: str) -> 'list[str]':
 		""" Get the dependencies of a file
 
 		Returns:
 				'list[str]': The list of dependencies of the file
 		"""
 		return self.dependencies[file]
+	
+	def populate_dependencies(self) -> None:
+		""" Populates the dependencies of the files in the codebase by reading the imports in the files
+		"""
+		for file in self.files:
+			dependencies = []
+			with open(file, 'r') as f:
+				lines = f.readlines()
+				for line in lines:
+					if line.startswith("import") or line.startswith("from"):
+						dependency = line.split(" ")[1]
+						dependencies.append(dependency)
+			self.dependencies[file] = dependencies
+	
+	def __repr__(self) -> str:
+		""" Prints the CodeBase with files and their dependencies
+
+		Returns:
+				str: The string representation of the CodeBase
+		"""
+		value = f"CodeBase: {self.name}\n"
+		for file in self.files:
+			value += f"{file} -> {self.dependencies[file]}\n"
+		return value
 
 class CodeGraph:
 	""" The graph for a codebase with nodes representing files and edges representing the dependencies/imports
+			Pass a complete CodeBase object to the constructor to generate the graph
 	"""
 
 	def __init__(self, codebase: CodeBase) -> None:
 		self.codebase = codebase
 		self.nodes = codebase.get_files()
-		self.edges = []
+		self.edges = [] # tuple[File, File]
   
-	def add_edge(self, file1: File or str, file2: File or str) -> None:
-		""" Adds an edge between two files
-
-		Args:
-				file1 (str): The first file
-				file2 (str): The second file
+	def populate(self) -> None:
+		""" Populates the graph with nodes and edges
 		"""
-		self.edges.append((file1, file2))
-  
-	def remove_edge(self, file1: File or str, file2: File or str) -> None:
-		""" Removes an edge between two files
+		for file in self.nodes:
+			dependencies = self.codebase.get_dependencies(file)
+			for dependency in dependencies:
+				self.add_edge(file, dependency)
 
-		Args:
-				file1 (str): The first file
-				file2 (str): The second file
-		"""
-		self.edges.remove((file1, file2))
+
+# Example usage
+codebase = CodeBase("MyCodeBase")
+codebase.add_file("file1", ["file2", "file3"])
+print(codebase)
