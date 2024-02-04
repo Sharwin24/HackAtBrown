@@ -26,7 +26,7 @@ We built Napkin's knowledge graph parser using Python to best fit our specific n
 An example of the graph structure can be seen here:
 ![graph structure](images/graph_structure.jpg)
 
-We fine-tuned a [Llama 7B model](https://huggingface.co/meta-llama/Llama-2-7b) from Hugging Face to better understand codebase questions and provide more relevant answers. We chose this model because ____
+We fine-tuned a [Llama 7B model](https://huggingface.co/meta-llama/Llama-2-7b) from Hugging Face to better understand codebase questions and provide more relevant answers. We chose this model because it is lightweight and fast, and because it has been fine-tuned on a large dataset of codebase questions and answers.
 
 We also fine-tuned an embedding model to better represent the relationships between nodes in the knowledge graph. We used the [CodeBERT](https://github.com/microsoft/CodeBERT) model to generate embeddings for each node in the graph, and then fine-tuned the model to better represent the relationships between nodes.
 
@@ -39,7 +39,7 @@ We began our project hoping to implement one of two preexisting models for knowl
 
 Upon constructing the graph by recursively traversing the AST of every file in the repository, we then discovered that we needed to perform a significant amount of cleaning. Nodes which provided minimal amounts of data, such as small functions with no children, did not provide enough value to warrant keeping in the graph, as their parent function/class/file would already contain all of the relevant information. We also needed to remove any nodes such that the raw text they contained was too large for the model to reasonably handle. This process of parsing, pruning, and later serializing our graph took a significant amount of time and effort we hoped to have spent implementing a preexisting model. 
 
-Another challenge we faced was ___
+Ultimately, we struggled to get our model to perform as well as we had hoped. This could have been due to limitations in the model itself, a lack of training data, or a fault in our graph parsing implementation. 
 
 ## 😁 Accomplishments that we're proud of
 We're proud of our hard work pulling together a variety of different tools, models, and algorithms to create a cohesive and effective tool for navigating codebases. We're particularly proud of our knowledge graph parser, which we built from scratch and which we believe is a powerful and effective tool for understanding the relationships between files, classes, and functions in a codebase for applications beyond our immediate project.
