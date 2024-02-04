@@ -26,7 +26,7 @@ class Component():
 		return f"{self.name}"
 
 	def __hash__(self) -> int:
-		return hash(self.id, self.name)
+		return hash((self.id, self.name))
 
 class File(Component):
 	""" The class for a file in the codebase
@@ -198,7 +198,7 @@ class CodeGraph:
 				print(f"Index out of range for edge {edge} with from_component ID {edge.from_component.id} and to_component ID {edge.to_component.id}")
 		return adjacency_matrix
   
-	def find_connected_nodes(self, node: Component) -> 'list[Component]':
+	def find_connected_nodes(self, node: Component) -> 'set[Component]':
 		""" Finds all nodes connected to a given node
 		"""
 		connected_nodes = []
@@ -282,30 +282,30 @@ class CodeGraph:
 				for edge in self.edges:
 					if edge.from_component == node or edge.to_component == node:
 						self.edges.remove(edge)
-      
-	def split_large_nodes(self, threshold: int = 1800) -> None:
-		""" Splits nodes with raw code more than threshold into 2 smaller nodes
+	  
+	def remove_large_nodes(self, threshold: int = 1800) -> None:
+		""" Removes nodes with raw code more than threshold
 		"""
 		for node in self.nodes:
 			if len(node.raw) > threshold:
-				# current_component_type = type(node)
-				# if current_component_type == File:
-				# 	new_node = File(node.name, node.parent, node.children, node.raw[:len(node.raw)//2], node.path, node.dependencies)
-				# elif current_component_type == Class:
-				# 	new_node = Class(node.name, node.parent, node.children, node.raw[:len(node.raw)//2])
-				# elif current_component_type == Function:
-				# 	new_node = Function(node.name, node.parent, node.children, node.raw[:len(node.raw)//2])
-				# self.add_node(new_node)
-				# self.add_edge(ComponentEdge(node, new_node))
-				# # Edit the original node to have the first half of the raw code
-				# node.raw = node.raw[len(node.raw)//2:]
 				connected_nodes = self.find_connected_nodes(node)
+				print(f"connected to {len(connected_nodes)} nodes")
+				print(f"{node=}, {type(node)=}")
 				# Connect connected_nodes to each other
-				for i, connected_node in enumerate(connected_nodes):
-					if i < len(connected_nodes) - 1:
-						self.add_edge(ComponentEdge(connected_node, connected_nodes[i+1]))
+				for i in range(len(connected_nodes)):
+					for j in range(i+1, len(connected_nodes)):
+						self.add_edge(ComponentEdge(connected_nodes[i], connected_nodes[j]))
 				self.nodes.remove(node)
-        
+	
+	def remove_duplicate_edges(self) -> None:
+		""" Removes duplicate edges from the graph
+		"""
+		unique_edges = set()
+		for edge in self.edges:
+			if edge not in unique_edges and ComponentEdge(edge.to_component, edge.from_component) not in unique_edges:
+				unique_edges.add(edge)
+		self.edges = list(unique_edges)
+		
 	def create_id_to_raw(self) -> 'dict[int, str]':
 		""" Creates a dictionary mapping node ids to their raw code
 		"""
