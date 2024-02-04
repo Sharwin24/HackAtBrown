@@ -26,7 +26,12 @@ class Component():
 		return f"{self.name}"
 
 	def __hash__(self) -> int:
-		return hash((self.id, self.name))
+		return hash((self.id))
+
+	def __eq__(self, other: 'Component') -> bool:
+		if not isinstance(other, Component):
+			return False
+		return self.id == other.id
 
 class File(Component):
 	""" The class for a file in the codebase
@@ -198,7 +203,7 @@ class CodeGraph:
 				print(f"Index out of range for edge {edge} with from_component ID {edge.from_component.id} and to_component ID {edge.to_component.id}")
 		return adjacency_matrix
   
-	def find_connected_nodes(self, node: Component) -> 'set[Component]':
+	def find_connected_nodes(self, node: Component) -> 'list[Component]':
 		""" Finds all nodes connected to a given node
 		"""
 		connected_nodes = []
@@ -207,7 +212,7 @@ class CodeGraph:
 				connected_nodes.append(edge.to_component)
 			elif edge.to_component == node:
 				connected_nodes.append(edge.from_component)
-		return connected_nodes
+		return list(set(connected_nodes))
   
 	def _dfs_build_deps(self, node: ast.AST, parent: Component = None) -> None:
 		""" Recursively builds the dependencies of a component node

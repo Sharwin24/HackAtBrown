@@ -18,8 +18,9 @@ class RetrievalAugmentedGeneration:
 		self.augmentationNodesById = []
 
 	def getMostSimilarNode(self) -> int:
-		maxSimilarity = torch.max(self.similarities)
-		return torch.where(self.similarities == maxSimilarity)[0]
+		""" Returns the most similar node by id to the similarities vector
+		"""
+		return torch.argmax(self.similarities)
 
 	def reset_augmentation(self) -> None:
 		self.augmentationNodesById = []
@@ -38,8 +39,8 @@ class RetrievalAugmentedGeneration:
 		neighbors = self.knowledgeGraph.find_connected_nodes(starting_node)
 		neighborsById = [node.id for node in neighbors]
 		scores = self.similarities[neighborsById]
-		maxScore = torch.max(scores)
-		newStartNode = torch.where(scores == maxScore)[0]
+		print(f"Scores Shape {scores.shape}, NeighborsByID : {neighborsById}")
+		newStartNode = neighborsById[torch.argmax(scores)]
 		self.augmentationNodesById.append(newStartNode)
 		self.graph_walk(newStartNode)
 
@@ -52,6 +53,7 @@ graphcastGraph.populate_graph()
 graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
+# print(graphcastGraph)
 
 # Usage Example
 prompt = "How to read a file in Python?"
