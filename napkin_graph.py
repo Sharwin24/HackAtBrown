@@ -6,6 +6,41 @@
 import os
 import sys
 import ast
+from dataclasses import dataclass
+
+@dataclass
+class Component:
+	""" The base class for all components of the codebase
+	"""
+	name: str
+	parent: 'Component' = None
+	children: 'list[Component]' = None
+	raw: str = None
+
+	def __repr__(self) -> str:
+		return f"{self.name}"
+
+@dataclass
+class File(Component):
+	""" The class for a file in the codebase
+	"""
+	path: str
+	dependencies: 'list[File]' = None
+	
+	def __post_init__(self) -> None:
+		self.dependencies = []
+		self.raw = open(self.path, 'r').read()
+
+@dataclass
+class Class(Component):
+	""" The class for a class in the codebase
+	"""
+	pass
+	
+
+@dataclass
+class Function(Component):
+	pass
 
 class CodeBase:
 	""" CodeBase is a representation of the codebase of a project, containing all files and their dependencies
@@ -57,6 +92,19 @@ class CodeBase:
 		"""
 		self.dependencies[file].remove(dependency)
   
+	def remove_dependency(self, dependency: str) -> None:
+		""" Remove a dependency from all files
+  
+		Args:
+				dependency (str): The dependency to be removed
+		"""
+		for file in self.files:
+			try:
+				if dependency in self.dependencies[file]:
+					self.dependencies[file].remove(dependency)
+			except KeyError:
+				continue
+  
 	def get_files(self) -> 'list[str]':
 		""" Get a list of files in the codebase
 
@@ -71,7 +119,10 @@ class CodeBase:
 		Returns:
 				'list[str]': The list of dependencies of the file
 		"""
-		return self.dependencies[file]
+		try:
+			return self.dependencies[file]
+		except KeyError:
+			return []
 	
 	def populate_dependencies(self) -> None:
 		""" Populates the dependencies of the files in the codebase by reading the imports in the files
@@ -124,22 +175,16 @@ class CodeBase:
 		return value
 
 class CodeGraph:
-	""" The graph for a codebase with nodes representing files and edges representing the dependencies/imports
-			Pass a complete CodeBase object to the constructor to generate the graph
+	""" The graph for a codebase with nodes representing components and edges representing the dependencies/imports
+			Pass a complete CodeBase object to the constructor
 	"""
 
 	def __init__(self, codebase: CodeBase) -> None:
 		self.codebase = codebase
-		self.nodes = codebase.get_files()
-		self.edges = [] # tuple[File, File]
-  
-	def populate(self) -> None:
-		""" Populates the graph with nodes and edges
-		"""
-		for file in self.nodes:
-			dependencies = self.codebase.get_dependencies(file)
-			for dependency in dependencies:
-				self.add_edge(file, dependency)
+		files = codebase.get_files()
+		if not files or len(files) == 0:
+			raise ValueError("The codebase is empty")
+		self.nodes = [] # List[Component]
 
 
 # Example usage
@@ -158,7 +203,7 @@ examples = CodeBase("MyCodeBase", "example_codebase")
 examples.populate_dependencies()
 print(examples)
 
-examples_ast = CodeBase("MyCodeBase", "example_codebase")
+examples_ast = CodeBase("MyASTCodeBase", "example_codebase")
 examples_ast.populate_dependencies_ast()
 print(examples_ast)
 
