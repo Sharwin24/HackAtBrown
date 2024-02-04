@@ -1,4 +1,4 @@
-# Napkin ![napkin](images/napkin_logo.png)
+# Napkin AI ![napkin](images/napkin_logo.png)
 A fast, lightweight graph retrieval-augmented generation tool for navigating codebases. 
 
 ## 💡 Inspiration
