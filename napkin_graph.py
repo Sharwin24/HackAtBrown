@@ -333,6 +333,7 @@ class CodeGraph:
 		"""
 		id_to_json = {} # Index to JSON Data (node id)
 		json_to_id = {} # JSON Data (node id) to Index
+		counter = 0
 		for i, node in enumerate(self.nodes):
 			id_to_json[i] = node.id
 			json_to_id[node.id] = i
