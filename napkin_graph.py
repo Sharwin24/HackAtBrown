@@ -314,8 +314,10 @@ class CodeGraph:
 	def create_id_to_raw(self) -> 'dict[int, str]':
 		""" Creates a dictionary mapping node ids to their raw code
 		"""
+		id_to_json, json_to_id = self.create_index_to_json_dict()
 		id_to_raw = {}
 		for node in self.nodes:
+			print(node)
 			id_to_raw[node.id] = node.raw
 		return id_to_raw
 
@@ -335,8 +337,11 @@ class CodeGraph:
 		json_to_id = {} # JSON Data (node id) to Index
 		counter = 0
 		for i, node in enumerate(self.nodes):
-			id_to_json[i] = node.id
-			json_to_id[node.id] = i
+			id_to_json[counter] = node.id
+			json_to_id[node.id] = counter
+			counter += 1
+		print(id_to_json)
+		print(json_to_id)
 		return (id_to_json, json_to_id)
    
 	def delete_edges_to_non_existent_nodes(self) -> None:
