@@ -22,7 +22,7 @@ class RetrievalAugmentedGeneration:
 		""" Returns the most similar node by id to the similarities vector
 		"""
 		print(f"Torch.argmax {torch.argmax(self.similarities).item()}")
-		return self.indexToNodeID[torch.argmax(self.similarities).item()]
+		return self.nodeIDToIndex[torch.argmax(self.similarities).item()]
 
 	def reset_augmentation(self) -> None:
 		self.augmentationNodesById = []
