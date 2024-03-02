@@ -314,9 +314,10 @@ class CodeGraph:
 	def create_id_to_raw(self) -> 'dict[int, str]':
 		""" Creates a dictionary mapping node ids to their raw code
 		"""
+		id_to_json, json_to_id = self.create_index_to_json_dict()
 		id_to_raw = {}
 		for node in self.nodes:
-			id_to_raw[node.id] = node.raw
+			id_to_raw[json_to_id[node.id]] = node.raw
 		return id_to_raw
 
 	def create_id_to_raw_json(self) -> None:
@@ -325,6 +326,7 @@ class CodeGraph:
 		# Save examples to a JSON
 		with open('graphcast.json', 'w') as f:
 			# Get id to raw dict
+			#this should update the correct node values from creare_id_to_raw
 			id_to_raw = self.create_id_to_raw()
 			json.dump(id_to_raw, f, indent=4, sort_keys=True)
    
