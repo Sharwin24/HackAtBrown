@@ -335,13 +335,9 @@ class CodeGraph:
 		"""
 		id_to_json = {} # Index to JSON Data (node id)
 		json_to_id = {} # JSON Data (node id) to Index
-		counter = 0
 		for i, node in enumerate(self.nodes):
-			id_to_json[counter] = node.id
-			json_to_id[node.id] = counter
-			counter += 1
-		print(id_to_json)
-		print(json_to_id)
+			id_to_json[i] = node.id
+			json_to_id[node.id] = i
 		return (id_to_json, json_to_id)
    
 	def delete_edges_to_non_existent_nodes(self) -> None:
