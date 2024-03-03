@@ -354,7 +354,8 @@ class CodeGraph:
 		for node in self.nodes:
 			node.id = new_id
 			new_id += 1
-
+		
+		id_to_json, json_to_id = self.create_index_to_json_dict()
 		for edge in self.edges:
-			edge.from_component.id = self.nodeIDToIndex[edge.from_component.id]  
-			edge.to_component.id = self.nodeIDToIndex[edge.to_component.id]
+			edge.from_component.id = json_to_id[edge.from_component.id]  
+			edge.to_component.id = json_to_id[edge.to_component.id]
