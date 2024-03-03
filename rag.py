@@ -65,11 +65,13 @@ graphcastGraph.populate_graph()
 graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
-graphcastGraph.delete_edges_to_non_existent_nodes()
-# graphcastGraph.create_id_to_raw_json()
+#graphcastGraph.delete_edges_to_non_existent_nodes()
+graphcastGraph.reindex_nodes()
+graphcastGraph.create_id_to_raw_json()
 # print(graphcastGraph)
 
 # Usage Example
-prompt = "How to read a file in Python?"
-RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
-print(RAG.graph_walk(RAG.getMostSimilarNode()))
+#prompt = "How to read a file in Python?"
+#RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
+#print(RAG.graph_walk(RAG.getMostSimilarNode()))
+#print(RAG.getMostSimilarNode())
