@@ -349,6 +349,7 @@ class CodeGraph:
                 if edge.from_component.id >= true_length or edge.to_component.id >= true_length:
                     self.edges.remove(edge)
 
+
     def reindex_nodes(self):
         new_id = 0
         id_to_json, json_to_id = self.create_index_to_json_dict()
