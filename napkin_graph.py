@@ -348,3 +348,13 @@ class CodeGraph:
 			if edge.from_component != None and edge.to_component != None:
 				if edge.from_component.id >= true_length or edge.to_component.id >= true_length:
 					self.edges.remove(edge)
+
+	def reindex_nodes(self):
+		new_id = 0
+		for node in self.nodes:
+			node.id = new_id
+			new_id += 1
+
+		for edge in self.edges:
+			edge.from_component.id = self.nodeIDToIndex[edge.from_component.id]  
+			edge.to_component.id = self.nodeIDToIndex[edge.to_component.id]
