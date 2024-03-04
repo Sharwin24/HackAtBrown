@@ -4,7 +4,6 @@
 """
 
 import os
-import sys
 import ast
 import itertools
 import json
@@ -21,6 +20,11 @@ class Component():
 		self.children = children
 		self.raw = raw
 		self.id = next(self.id_iter)
+  
+	def get_type(self) -> str:
+		""" Get the type of the component
+		"""
+		return self.__class__.__name__
 
 	def __repr__(self) -> str:
 		return f"{self.name}"

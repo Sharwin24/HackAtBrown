@@ -14,6 +14,7 @@ class RetrievalAugmentedGeneration:
 		self.promptEmbedding = self.embeddingAgent.embed(prompt).to(self.device)
 		self.knowledgeGraph = knowledgeGraph
 		self.similarities = torch.cosine_similarity(self.codebaseEmbeddingVector, self.promptEmbedding).to(self.device)
+		print(f"{self.similarities}")
 		self.walkThreshold = 0.9
 		self.augmentationNodesById = []
 		self.indexToNodeID, self.nodeIDToIndex = self.knowledgeGraph.create_index_to_json_dict()
@@ -21,8 +22,9 @@ class RetrievalAugmentedGeneration:
 	def getMostSimilarNode(self) -> int:
 		""" Returns the most similar node by id to the similarities vector
 		"""
-		print(f"Torch.argmax {torch.argmax(self.similarities).item()}")
-		return self.nodeIDToIndex[torch.argmax(self.similarities).item()]
+		print(f"Starting Node {torch.topk(self.similarities,5)}")
+		
+		return torch.argmax(self.similarities).item()
 
 	def reset_augmentation(self) -> None:
 		self.augmentationNodesById = []
@@ -33,11 +35,14 @@ class RetrievalAugmentedGeneration:
 		Args:
 			start_node_id (int): The starting node for the graph walk [node_id]
 		"""
+		starting_node = self.knowledgeGraph.get_node_by_id(start_node_id)
 		# Base case
-		if self.similarities[start_node_id] < self.walkThreshold:
+		if self.similarities[self.nodeIDToIndex[start_node_id]] < self.walkThreshold:
+			if len(self.augmentationNodesById) == 0:
+				self.augmentationNodesById.append(starting_node)
 			return self.augmentationNodesById
 		# Get neighbors and find the most similar one by cosine similarity
-		starting_node = self.knowledgeGraph.get_node_by_id(start_node_id)
+		self.augmentationNodesById.append(starting_node)
 		neighbors = self.knowledgeGraph.find_connected_nodes(starting_node)
 		neighborsById = []
 		for node in neighbors:
@@ -53,7 +58,6 @@ class RetrievalAugmentedGeneration:
 			if self.similarities[i] == maxScore:
 				newStartNode = self.indexToNodeID[i]
 				break
-		self.augmentationNodesById.append(newStartNode)
 		self.graph_walk(newStartNode)
 
 # Create CodeBase Object
@@ -67,9 +71,10 @@ graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
 graphcastGraph.delete_edges_to_non_existent_nodes()
 # graphcastGraph.create_id_to_raw_json()
-# print(graphcastGraph)
+print(graphcastGraph)
 
 # Usage Example
-prompt = "How to read a file in Python?"
+prompt = "what does the function _build_update_fns_for_node_types do"
 RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
-print(RAG.graph_walk(RAG.getMostSimilarNode()))
+# print(RAG.getMostSimilarNode())
+# print(RAG.graph_walk(RAG.getMostSimilarNode()))
