@@ -24,6 +24,7 @@ class RetrievalAugmentedGeneration:
         print(f"Torch.argmax {torch.argmax(self.similarities).item()}")
         return self.nodeIDToIndex[torch.argmax(self.similarities).item()]
 
+
     def reset_augmentation(self) -> None:
         self.augmentationNodesById = []
 
@@ -56,6 +57,7 @@ class RetrievalAugmentedGeneration:
         self.augmentationNodesById.append(newStartNode)
         self.graph_walk(newStartNode)
 
+
 # Create CodeBase Object
 graphcastCodeBase = CodeBase("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
 
@@ -65,7 +67,6 @@ graphcastGraph.populate_graph()
 graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
-#graphcastGraph.delete_edges_to_non_existent_nodes()
 graphcastGraph.reindex_nodes()
 # for node in graphcastGraph.nodes:
 #   print(node.id)
@@ -74,7 +75,8 @@ graphcastGraph.create_id_to_raw_json()
 # print(graphcastGraph)
 
 # Usage Example
-#prompt = "How to read a file in Python?"
+#prompt = "what does the function _build_update_fns_for_node_types do"
 #RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
 #print(RAG.graph_walk(RAG.getMostSimilarNode()))
 #print(RAG.getMostSimilarNode())
+
