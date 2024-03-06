@@ -23,7 +23,7 @@ As shown in the prior section, Napkin has a few key moving parts:
 4. Graph retrieval algorithm
 5. Prompt augmentation engine
 
-We built Napkin's knowledge graph parser using Python to best fit our specific needs. Our parser is built with the help of `[ast](https://docs.python.org/3/library/ast.html)`, a powerful module that allows for the parsing of python code into an abstract syntax tree (AST). We used this library to parse each file in the codebase into an AST, and then iterated through the AST to identify the relationships between files, classes, and functions. We then used this information to construct a graph, with nodes representing files, classes, and functions, and edges representing the relationships between them, such as imports, definitions, and calls.
+We built Napkin's knowledge graph parser using Python to best fit our specific needs. Our parser is built with the help of [ast](https://docs.python.org/3/library/ast.html), a powerful module that allows for the parsing of python code into an abstract syntax tree (AST). We used this library to parse each file in the codebase into an AST, and then iterated through the AST to identify the relationships between files, classes, and functions. We then used this information to construct a graph, with nodes representing files, classes, and functions, and edges representing the relationships between them, such as imports, definitions, and calls.
 
 An example of the graph structure can be seen here:
 ![graph structure](images/graph_structure.jpg)
