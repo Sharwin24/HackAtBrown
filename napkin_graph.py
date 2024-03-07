@@ -189,6 +189,8 @@ class CodeGraph:
 		""" Adds a node to the graph
 		"""
 		self.nodes.append(node)
+		
+
 	
 	def add_edge(self, edge: ComponentEdge) -> None:
 		""" Adds an edge to the graph
@@ -358,6 +360,13 @@ class CodeGraph:
 		for node in self.nodes:
 			node.id = new_id
 			new_id += 1
+	
+	def print_nodes(self):
+		print('these are a list of all the nodes', self.nodes)
+		# for edge in self.edges:
+		# 	print('these are all the edges', edge)
+	def print_edges(self):
+		print('this is a list of all the edges', self.edges)
 		
 		id_to_json, json_to_id = self.create_index_to_json_dict()
 		for edge in self.edges:

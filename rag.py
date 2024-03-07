@@ -70,8 +70,13 @@ graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
 graphcastGraph.delete_edges_to_non_existent_nodes()
+# graphcastGraph.print_nodes()
+# graphcastGraph.print_edges()
 # graphcastGraph.create_id_to_raw_json()
 print(graphcastGraph)
+
+# for i in graphcastGraph:
+# 	print(i)
 
 # Usage Example
 prompt = "what does the function _build_update_fns_for_node_types do"
