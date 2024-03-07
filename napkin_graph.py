@@ -180,7 +180,7 @@ class CodeGraph:
 		value += "\tNodes -> Edges: \n"
 		for node in self.nodes:
 			value += f"\t\t{node} -> {self.find_connected_nodes(node)}\n"
-			value += f"\t\t\tRaw Text: {node.raw}\n"
+			# value += f"\t\t\tRaw Text: {node.raw}\n"
 		return value
 
 	def get_node_by_id(self, id: int) -> Component:
