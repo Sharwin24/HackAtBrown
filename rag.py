@@ -80,7 +80,7 @@ print(graphcastGraph)
 
 # Usage Example
 prompt = "what does the function _build_update_fns_for_node_types do"
-RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
+# RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
 # print(RAG.getMostSimilarNode())
 # print(RAG.graph_walk(RAG.getMostSimilarNode()))
 

@@ -22,9 +22,24 @@ class Component():
 		self.id = next(self.id_iter)
   
 	def get_type(self) -> str:
-		""" Get the type of the component
+		""" Get the type of the component [File, Class, Function]
 		"""
 		return self.__class__.__name__
+
+	def is_file(self) -> bool:
+		""" Check if the component is a file
+		"""
+		return self.get_type() == "File"
+
+	def is_class(self) -> bool:
+		""" Check if the component is a class
+		"""
+		return self.get_type() == "Class"
+
+	def is_function(self) -> bool:
+		""" Check if the component is a function
+		"""
+		return self.get_type() == "Function"
 
 	def __repr__(self) -> str:
 		return f"{self.name}"
@@ -165,6 +180,7 @@ class CodeGraph:
 		value += "\tNodes -> Edges: \n"
 		for node in self.nodes:
 			value += f"\t\t{node} -> {self.find_connected_nodes(node)}\n"
+			value += f"\t\t\tRaw Text: {node.raw}\n"
 		return value
 
 	def get_node_by_id(self, id: int) -> Component:
@@ -189,8 +205,6 @@ class CodeGraph:
 		""" Adds a node to the graph
 		"""
 		self.nodes.append(node)
-		
-
 	
 	def add_edge(self, edge: ComponentEdge) -> None:
 		""" Adds an edge to the graph
@@ -372,3 +386,31 @@ class CodeGraph:
 		for edge in self.edges:
 			edge.from_component.id = json_to_id[edge.from_component.id]  
 			edge.to_component.id = json_to_id[edge.to_component.id]
+
+class VisualCodeGraph():
+	""" Class for generating visualizations of the code graph
+	"""
+	
+	def __init__(self, codegraph: CodeGraph) -> None:
+		self.codegraph = codegraph
+  
+	def create_graph_dict(self) -> 'dict[File, list[dict[Class, list[Function]]]]':
+		""" Creates a dictionary representation of the graph
+				where keys are files and values are a list of dictionaries
+				representing the classes and their functions
+
+				Example:
+				{
+						'file1.py': [
+								{
+										'Class1': ['Function1', 'Function2']
+								},
+								{
+										'Class2': ['Function3', 'Function4']
+								}
+						]
+				}
+		Returns:
+				dict[File, list[dict[Class, list[Function]]]]: The dictionary representation of the graph
+		"""
+		pass
