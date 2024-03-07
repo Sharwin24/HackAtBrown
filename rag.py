@@ -78,3 +78,11 @@ prompt = "what does the function _build_update_fns_for_node_types do"
 RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
 # print(RAG.getMostSimilarNode())
 # print(RAG.graph_walk(RAG.getMostSimilarNode()))
+
+# [NotImplementedYet] Next Step: Take similar nodes from graph_walk and 
+# paste raw text along with the prompt into LLM to generate a response
+
+# [NotImplementedYet] Next Step: Synthetic training by comparing output to 
+# GPT-4's response to the same prompt using the entire codebase as context
+
+# [NotImplementedYet] Next Step: Bake all of this python code into a VSCode Extension
