@@ -399,7 +399,7 @@ class VisualCodeGraph():
 				where keys are files and values are a list of dictionaries
 				representing the classes and their functions
 
-				Example:
+				Example Output:
 				{
 						'file1.py': [
 								{
@@ -413,4 +413,21 @@ class VisualCodeGraph():
 		Returns:
 				dict[File, list[dict[Class, list[Function]]]]: The dictionary representation of the graph
 		"""
-		pass
+		graph_dict = {}
+		for node in self.codegraph.nodes:
+			if node.is_file():
+				file = node
+				graph_dict[file] = []
+				# Get the connected nodes
+				connected_nodes = self.codegraph.find_connected_nodes(file)
+				for connected_node in connected_nodes:
+					if connected_node.is_class():
+						class_dict = {}
+						class_dict[connected_node] = []
+						# Get the connected nodes
+						connected_nodes2 = self.codegraph.find_connected_nodes(connected_node)
+						for connected_node2 in connected_nodes2:
+							if connected_node2.is_function():
+								class_dict[connected_node].append(connected_node2)
+						graph_dict[file].append(class_dict)
+		return graph_dict

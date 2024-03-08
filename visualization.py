@@ -62,6 +62,3 @@ visualization_graph.generate_lists()
 visualization_graph.build_graph()
 # print(visualization_graph.names_list)
 # print(visualization_graph.parents_list)
-
-
-        
