@@ -22,7 +22,7 @@ class EmbeddingGenerator:
         print(f"EmbeddingGenerator using device: {self.device}")
         self.embeddingAgent = embeddingAgent
         self.json_path = knowledge_graph_json_path
-        os.makedirs(embeddings_dir_path, exist_ok=True)
+        self.embeddings_dir_path = embeddings_dir_path
         self.embeddings_file_path = embeddings_file_path
     
     def generate_embeddings(self) -> None:
@@ -31,6 +31,8 @@ class EmbeddingGenerator:
         with open(self.json_path, 'r', encoding='utf-8') as file:
             nodeIdToRawText = json.load(file)
         embeddings_list = []
+        # Create the embeddings directory if it doesn't exist
+        os.makedirs(self.embeddings_dir_path, exist_ok=True)
         # Loop through the JSON and get the embeddings
         for nodeId, rawText in nodeIdToRawText.items():
             # Ensure the rawText is a string
@@ -44,7 +46,9 @@ class EmbeddingGenerator:
                  # Collect embeddings
                 embeddings_list.append(embeddings)
                 # Define the path to save the embeddings
-                embeddings_file_path = os.path.join(embeddings_path, nodeId + '.pt')
+                embeddings_file_path = os.path.join(self.embeddings_dir_path, nodeId + '.pt')
+                torch.save(embeddings, embeddings_file_path)
+        # Create the embeddings matrix by stacking the embeddings list
         embeddingMatrix = torch.vstack(embeddings_list)
         
         # Save the embeddings
@@ -52,35 +56,22 @@ class EmbeddingGenerator:
         
         print('Embeddings are saved successfully.')
 
-# Initialize the embedder
-embedder = Embedder("microsoft/codebert-base")
 
-# Directory to store the embeddings
-embeddings_path = 'GraphCastEmbeddings/'
+def test():
+    # Initialize the embedder
+    embedder = Embedder("microsoft/codebert-base")
 
-    
+    # Directory to store the embeddings
+    embeddings_dir_path = 'embeddings/'
 
+    # JSON file path
+    knowledge_graph_json_path = 'knowledge_graph.json'
 
-for nodeId, rawText in nodeIdToRawText.items():
-    # Ensure the rawText is a string
-    if isinstance(rawText, str):
-        # Get embeddings for the raw text
-        embeddings = embedder.embed(rawText)
-        
-        # Move embeddings to CPU if you plan to use numpy or save in a non-GPU format
-        embeddings = embeddings.to('cpu')
+    # File to store the embeddings
+    embeddings_file_path = 'vectordb.pt'
 
-        # Collect embeddings
-        embeddings_list.append(embeddings)
-embeddingMatrix = torch.vstack(embeddings_list)
+    # Initialize the EmbeddingGenerator
+    embeddingGenerator = EmbeddingGenerator(embedder, knowledge_graph_json_path, embeddings_dir_path, embeddings_file_path)
 
-    
-    # Define the path to save the embeddings
-    # embeddings_file_path = os.path.join(embeddings_path, nodeId + '.pt')
-    
-    # Save the embeddings
-torch.save(embeddingMatrix, 'vectordb.pt')
-
-print(embeddingMatrix.shape)
-
-print('Embeddings are saved successfully.')
+    # Generate the embeddings
+    embeddingGenerator.generate_embeddings()
