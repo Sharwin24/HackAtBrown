@@ -33,8 +33,8 @@ class EmbeddingGenerator:
         embeddings_list = []
         # Create the embeddings directory if it doesn't exist
         os.makedirs(self.embeddings_dir_path, exist_ok=True)
-        # Loop through the JSON and get the embeddings
-        for nodeId, rawText in nodeIdToRawText.items():
+        # Loop through the JSON and get the embeddings from rawText
+        for rawText in nodeIdToRawText.values():
             # Ensure the rawText is a string
             if isinstance(rawText, str):
                 # Get embeddings for the raw text
@@ -43,11 +43,8 @@ class EmbeddingGenerator:
                 # Move embeddings to CPU if you plan to use numpy or save in a non-GPU format
                 embeddings = embeddings.to('cpu')
                 
-                 # Collect embeddings
+                # Collect embeddings
                 embeddings_list.append(embeddings)
-                # Define the path to save the embeddings
-                embeddings_file_path = os.path.join(self.embeddings_dir_path, nodeId + '.pt')
-                torch.save(embeddings, embeddings_file_path)
         # Create the embeddings matrix by stacking the embeddings list
         embeddingMatrix = torch.vstack(embeddings_list)
         
@@ -57,23 +54,22 @@ class EmbeddingGenerator:
         print('Embeddings are saved successfully.')
 
 
-if __name__ == "__main__":
-    # This file should only run once and generate the embeddings for the knowledge graph
-    
-    # Initialize the embedder
-    embedder = Embedder("microsoft/codebert-base")
+# This file should only run once and generate the embeddings for the knowledge graph
 
-    # Directory to store the embeddings
-    embeddings_dir_path = 'embeddings/'
+# Initialize the embedder
+embedder = Embedder("microsoft/codebert-base")
 
-    # JSON file path
-    knowledge_graph_json_path = 'knowledge_graph.json'
+# Directory to store the embeddings
+embeddings_dir_path = 'embeddings/'
 
-    # File to store the embeddings
-    embeddings_file_path = 'vectordb.pt'
+# JSON file path
+knowledge_graph_json_path = 'knowledge_graph.json'
 
-    # Initialize the EmbeddingGenerator
-    embeddingGenerator = EmbeddingGenerator(embedder, knowledge_graph_json_path, embeddings_dir_path, embeddings_file_path)
+# File to store the embeddings
+embeddings_file_path = 'vectordb.pt'
 
-    # Generate the embeddings
-    embeddingGenerator.generate_embeddings()
+# Initialize the EmbeddingGenerator
+embeddingGenerator = EmbeddingGenerator(embedder, knowledge_graph_json_path, embeddings_dir_path, embeddings_file_path)
+
+# Generate the embeddings
+embeddingGenerator.generate_embeddings()
