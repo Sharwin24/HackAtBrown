@@ -57,7 +57,9 @@ class EmbeddingGenerator:
         print('Embeddings are saved successfully.')
 
 
-def test():
+if __name__ == "__main__":
+    # This file should only run once and generate the embeddings for the knowledge graph
+    
     # Initialize the embedder
     embedder = Embedder("microsoft/codebert-base")
 
