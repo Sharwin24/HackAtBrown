@@ -250,6 +250,7 @@ class CodeGraph:
         """ Populates the graph with component nodes and edges representing
         the files, classes, and functions in the codebase and their dependencies
         """
+        print(f"Populating graph for {self.codebase.name}")
         for file in self.codebase.get_files():
             self.add_node(file)
             tree = ast.parse(file.raw)
