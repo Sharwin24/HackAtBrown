@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 from model import Embedder
 from napkin_graph import CodeGraph, CodeBase
 
