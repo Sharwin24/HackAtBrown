@@ -1,7 +1,5 @@
-import numpy as np
 from model import Embedder
 import torch
-from transformers import AutoTokenizer, AutoModel
 import os
 import json
 
