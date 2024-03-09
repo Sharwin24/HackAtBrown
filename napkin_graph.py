@@ -320,11 +320,14 @@ class CodeGraph:
             id_to_raw[node.id] = node.raw
         return id_to_raw
 
-    def create_id_to_raw_json(self) -> None:
+    def create_id_to_raw_json(self, json_file_path: str) -> None:
         """ Saves the dictionary mapping node ids to their raw code to a JSON
         """
+        # If the json file already exists, overwrite it
+        if os.path.exists(json_file_path):
+          os.remove(json_file_path)
         # Save examples to a JSON
-        with open('graphcast.json', 'w') as f:
+        with open(json_file_path, 'w') as f:
             # Get id to raw dict
             #this should update the correct node values from creare_id_to_raw
             id_to_raw = self.create_id_to_raw()
@@ -348,16 +351,9 @@ class CodeGraph:
             if edge.from_component != None and edge.to_component != None:
                 if edge.from_component.id >= true_length or edge.to_component.id >= true_length:
                     self.edges.remove(edge)
+    
     def reindex_nodes(self):
         new_id = 0
-        id_to_json, json_to_id = self.create_index_to_json_dict()
         for node in self.nodes:
             node.id = new_id
             new_id += 1
-        for node in self.nodes:
-            for edge in self.edges:
-                if edge.from_component != None and edge.to_component != None:
-                    if id_to_json[node.id] == edge.from_component.id:
-                        edge.from_component.id = json_to_id[edge.from_component.id]
-                    if id_to_json[node.id] == edge.to_component.id:
-                        edge.to_component.id = json_to_id[edge.to_component.id]

@@ -12,7 +12,7 @@ graphcastGraph.populate_func_call_edges()
 graphcastGraph.remove_large_nodes()
 #graphcastGraph.delete_edges_to_non_existent_nodes()
 graphcastGraph.reindex_nodes()
-graphcastGraph.create_id_to_raw_json()
+graphcastGraph.create_id_to_raw_json('graphcast.json')
 print(graphcastGraph)
 
 # Usage Example
