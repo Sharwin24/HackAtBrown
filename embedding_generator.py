@@ -7,27 +7,28 @@ import json
 
 class EmbeddingGenerator:
     
-    def __init__(self, embeddingAgent: Embedder, directory_path: str, embeddings_file_path: str) -> None:
-        """ Initializes the EmbeddingGenerator class with the Embedder
-            and path to repository containing the .py files, and the path
-            to the file where the embeddings file will be stored [.pt].
+    def __init__(self, embeddingAgent: Embedder, knowledge_graph_json_path: str, embeddings_dir_path: str, embeddings_file_path: str) -> None:
+        """ Initializes the EmbeddingGenerator class with the Embedder, path to CodeGraph JSON file,
+            the path to the directory where the embeddings files will be stored,
+            and the name of the file where the embeddings_matrix will be stored as a .pt file
 
         Args:
             embeddingAgent (Embedder): An Embedder object built with a specific model
-            directory_path (str): The path to the directory containing the .py files, or the repository
-            embeddings_path (str): The name of the file where the embeddings will be stored as a .pt file
+            directory_path (str): The path to the CodeGraph JSON file
+            embeddings_dir_path (str): The path to the directory where the embeddings files will be stored
+            embeddings_file_path (str): The name of the file where the embeddings will be stored as a .pt file
         """
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"Using device: {self.device}")
+        print(f"EmbeddingGenerator using device: {self.device}")
         self.embeddingAgent = embeddingAgent
-        # Create the directory if it doesn't exist
-        os.makedirs(embeddings_path, exist_ok=True)
-        self.directory_path = directory_path
+        self.json_path = knowledge_graph_json_path
+        os.makedirs(embeddings_dir_path, exist_ok=True)
+        self.embeddings_file_path = embeddings_file_path
     
     def generate_embeddings(self) -> None:
         """ Generates the embeddings for the .py files in the directory
         """
-        with open('graphcast.json', 'r', encoding='utf-8') as file:
+        with open(self.json_path, 'r', encoding='utf-8') as file:
             nodeIdToRawText = json.load(file)
         embeddings_list = []
         # Loop through the JSON and get the embeddings
@@ -42,12 +43,12 @@ class EmbeddingGenerator:
                 
                  # Collect embeddings
                 embeddings_list.append(embeddings)
+                # Define the path to save the embeddings
+                embeddings_file_path = os.path.join(embeddings_path, nodeId + '.pt')
         embeddingMatrix = torch.vstack(embeddings_list)
-        # Define the path to save the embeddings
-        # embeddings_file_path = os.path.join(embeddings_path, nodeId + '.pt')
         
         # Save the embeddings
-        torch.save(embeddingMatrix, embeddings_file_path)
+        torch.save(embeddingMatrix, self.embeddings_file_path)
         
         print('Embeddings are saved successfully.')
 
