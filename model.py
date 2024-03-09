@@ -37,7 +37,7 @@ class Embedder:
         return cls_embedding
     
     def train(self, texts):
-         # Tokenization: Encode the inputs
+        # Tokenization: Encode the inputs
         inputs = self.tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
         inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
         # Model Inference: Get the embeddings
