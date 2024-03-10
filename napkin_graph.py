@@ -10,11 +10,11 @@ import itertools
 import json
 
 class Component():
-    """ The base class for all components of the codebase
-    """
+	""" The base class for all components of the codebase
+	"""
   
-    id_iter = itertools.count()
- 
+	id_iter = itertools.count()
+
 	def __init__(self, name: str, parent: 'Component', children: 'list[Component]', raw: str) -> None:
 		self.name = name
 		self.parent = parent
@@ -45,13 +45,13 @@ class Component():
 	def __repr__(self) -> str:
 		return f"{self.name}"
 
-  def __hash__(self) -> int:
-    return hash((self.id))
+	def __hash__(self) -> int:
+		return hash((self.id))
 
-  def __eq__(self, other: 'Component') -> bool:
-    if not isinstance(other, Component):
-        return False
-    return self.id == other.id
+	def __eq__(self, other: 'Component') -> bool:
+		if not isinstance(other, Component):
+			return False
+		return self.id == other.id
 
 class File(Component):
     """ The class for a file in the codebase
@@ -387,7 +387,7 @@ class CodeGraph:
       print('this is a list of all the edges', self.edges)
 
 
-  class VisualCodeGraph():
+class VisualCodeGraph():
 	""" Class for generating visualizations of the code graph
 	"""
 	
