@@ -15,7 +15,6 @@ graph_dict= {
     'file1.py': [{'Class1': [{'Function1': "def raw_text"}, {'Function2': "def raw_text2"}]}],
     'file2.py': [{'Class3': [{'Function3': "def raw_text3"}, {'Function4': "def raw_text4"}, {'Function5': "def raw_text5"}]}],
     'file3.py': [{'Class4': [{'Function6': "def raw_text6"}, {'Function7': "def raw_text7"}, {'Function8': "def raw_text8"}]}]
-
 }
 
 class Visualization_Graph():
@@ -69,7 +68,7 @@ class Visualization_Graph():
 
 visualization_graph = Visualization_Graph()
 visualization_graph.generate_lists()
-visualization_graph.build_graph()
+# visualization_graph.build_graph()
 # print(visualization_graph.names_list)
 # print(visualization_graph.parents_list)
 
