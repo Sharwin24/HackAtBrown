@@ -419,9 +419,45 @@ class VisualCodeGraph():
     """ Class for generating visualizations of the code graph
     """
 
+<<<<<<< HEAD
+				Example Output:
+				{
+						'file1.py': [
+								{
+										'Class1': ['Function1', 'Function2']
+								},
+								{
+										'Class2': ['Function3', 'Function4']
+								}
+						]
+				}
+		Returns:
+				dict[File, list[dict[Class, list[Function]]]]: The dictionary representation of the graph
+		"""
+		graph_dict = {}
+		for node in self.codegraph.nodes:
+			if node.is_file():
+				file = node
+				graph_dict[file] = []
+				# Get the connected nodes
+				connected_nodes = self.codegraph.find_connected_nodes(file)
+				for connected_node in connected_nodes:
+					if connected_node.is_class():
+						class_dict = {}
+						class_dict[connected_node] = []
+						# Get the connected nodes
+						connected_nodes2 = self.codegraph.find_connected_nodes(connected_node)
+						for connected_node2 in connected_nodes2:
+							if connected_node2.is_function():
+								class_dict[connected_node].append(connected_node2)
+						graph_dict[file].append(class_dict)
+        
+		return graph_dict
+=======
     def __init__(self, codegraph: CodeGraph) -> None:
         self.codegraph = codegraph
         self.graph_dict = self._create_graph_dict()
+>>>>>>> 4d8ea6c642a01b795ca657c2c900f3102f0a205d
 
     def get_graph_dict(self):
         if self.graph_dict:
