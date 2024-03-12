@@ -22,6 +22,17 @@ class Component():
         self.raw = raw
         self.id = next(self.id_iter)
 
+    def __repr__(self) -> str:
+        return f"{self.name}"
+
+    def __hash__(self) -> int:
+        return hash((self.id))
+
+    def __eq__(self, other: 'Component') -> bool:
+        if not isinstance(other, Component):
+            return False
+        return self.id == other.id
+
     def get_type(self) -> str:
         """ Get the type of the component [File, Class, Function]
         """
@@ -41,17 +52,6 @@ class Component():
         """ Check if the component is a function
         """
         return self.get_type() == "Function"
-
-    def __repr__(self) -> str:
-        return f"{self.name}"
-
-    def __hash__(self) -> int:
-        return hash((self.id))
-
-    def __eq__(self, other: 'Component') -> bool:
-        if not isinstance(other, Component):
-            return False
-        return self.id == other.id
 
 
 class File(Component):
@@ -453,14 +453,14 @@ class VisualCodeGraph():
         nodes = self.codegraph.nodes
         for node in nodes:
             if node.is_file():
-                print(f"File: {node.name}")
+                # print(f"File: {node.name}")
                 file = node
                 graph_dict[file] = []
                 # Get the connected nodes
                 connected_nodes = self.codegraph.find_connected_nodes(file)
                 for connected_node in connected_nodes:
                     if connected_node.is_class():
-                        print(f"\tClass: {connected_node.name}")
+                        # print(f"\tClass: {connected_node.name}")
                         class_dict = {}
                         class_dict[connected_node] = []
                         # Get the connected nodes
@@ -470,7 +470,7 @@ class VisualCodeGraph():
                             if connected_node2 == None:
                                 continue
                             elif connected_node2.is_function():
-                                print(f"\t\tFunction: {connected_node2.name}")
+                                # print(f"\t\tFunction: {connected_node2.name}")
                                 class_dict[connected_node].append(
                                     connected_node2)
                         graph_dict[file].append(class_dict)
