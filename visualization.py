@@ -1,11 +1,15 @@
 import plotly.express as px
-from napkin_graph import *
+from napkin_graph import CodeBase, CodeGraph, VisualCodeGraph
 
-# codebase = CodeBase()
-# codegraph = CodeGraph()
-# visual_cg = VisualCodeGraph(codegraph)
-# graph_dict = visual_cg.get_graph_dict()
-
+graphcastCodeBase = CodeBase("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
+graphcastGraph = CodeGraph(graphcastCodeBase)
+graphcastGraph.populate_graph()
+# graphcastGraph.delete_small_nodes()
+graphcastGraph.populate_func_call_edges()
+# graphcastGraph.remove_large_nodes()
+graphcastGraph.reindex_nodes()
+visualGraphCastCodeGraph = VisualCodeGraph(graphcastGraph)
+graph_dict = visualGraphCastCodeGraph.create_graph_dict()
 
 
 #This is an example graph_dict for testing puproses, replace with visual_cg.get_graph_dict()

@@ -4,7 +4,6 @@
 """
 
 import os
-import sys
 import ast
 import itertools
 import json
@@ -414,7 +413,8 @@ class VisualCodeGraph():
 				dict[File, list[dict[Class, list[Function]]]]: The dictionary representation of the graph
 		"""
 		graph_dict = {}
-		for node in self.codegraph.nodes:
+		nodes = self.codegraph.nodes
+		for node in nodes:
 			if node.is_file():
 				file = node
 				graph_dict[file] = []
