@@ -430,5 +430,6 @@ class VisualCodeGraph():
 							if connected_node2.is_function():
 								class_dict[connected_node].append(connected_node2)
 						graph_dict[file].append(class_dict)
+        
 		return graph_dict
 

@@ -51,6 +51,28 @@ class Visualization_Graph():
                                 self.parents_list.append(class_name)
                                 self.names_list.append(raw_texts)
                                 self.parents_list.append(functions_names)
+    
+    #This version shows without the raw text included 
+    # def generate_lists(self):
+    #     ''' Populate the names_list and parents_list attributes based on the graph_dict.
+    #         Iterates through the graph_dict, extracting file names, class names, and function names
+    #         to populate names_list and their corresponding parent relationships in parents_list.
+    #     '''
+    #     for file, classes in self.graph_dict.items():
+    #         self.names_list.append(file)
+    #         self.parents_list.append('')
+    #         for classes_dict in classes:
+    #             for class_name, functions in classes_dict.items():
+    #                 self.names_list.append(class_name)
+    #                 self.parents_list.append(file)
+    #                 # print(class_name)
+    #                 for function in functions:
+    #                     self.names_list.append(function)
+    #                     self.parents_list.append(class_name)
+    #                     # print(function)
+    #                     pass
+
+
 
 
     def build_graph(self):
@@ -94,29 +116,3 @@ visualization_graph.generate_lists()
     # names=  ['file1.py', 'Class1', 'Function1', 'Function2', 'Class2', 'Function3', 'Function4', 'file2.py', 'Class2.1', 'Function5', 'Function6', 'Class2.2', 'Function7', 'Function8', 'file3.py', 'Class3.1', 'Function9', 'Function10', 'Class3.2', 'Function11', 'Function12']
     # parents=['', 'file1.py', 'Class1', 'Class1', 'file1.py', 'Class2', 'Class2', '', 'file2.py', 'Class2.1', 'Class2.1', 'file2.py', 'Class2.2', 'Class2.2', '', 'file3.py', 'Class3.1', 'Class3.1', 'file3.py', 'Class3.2', 'Class3.2']
 
-
-
-    #This version shows without the raw text included 
-    # def generate_lists(self):
-    #     ''' Populate the names_list and parents_list attributes based on the graph_dict.
-    #         Iterates through the graph_dict, extracting file names, class names, and function names
-    #         to populate names_list and their corresponding parent relationships in parents_list.
-    #     '''
-    #     for file, classes in self.graph_dict.items():
-    #         self.names_list.append(file)
-    #         self.parents_list.append('')
-    #         for classes_dict in classes:
-    #             for class_name, functions in classes_dict.items():
-    #                 self.names_list.append(class_name)
-    #                 self.parents_list.append(file)
-    #                 # print(class_name)
-    #                 for function in functions:
-    #                     self.names_list.append(function)
-    #                     self.parents_list.append(class_name)
-    #                     # print(function)
-    #                     pass
-
-
-
-
-        
