@@ -1,21 +1,28 @@
 import plotly.express as px
-from napkin_graph import *
+from napkin_graph import CodeBase, CodeGraph, VisualCodeGraph
 
-# codebase = CodeBase()
-# codegraph = CodeGraph()
-# visual_cg = VisualCodeGraph(codegraph)
-# graph_dict = visual_cg.get_graph_dict()
+graphcastCodeBase = CodeBase(
+    "GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
+graphcastGraph = CodeGraph(graphcastCodeBase)
+graphcastGraph.populate_graph()
+# graphcastGraph.delete_small_nodes()
+graphcastGraph.populate_func_call_edges()
+# graphcastGraph.remove_large_nodes()
+graphcastGraph.reindex_nodes()
+visualGraphCastCodeGraph = VisualCodeGraph(graphcastGraph)
+graph_dict = visualGraphCastCodeGraph.get_graph_dict()
 
+print(f"Graph Dictionary:\n{graph_dict}")
 
+# This is an example graph_dict for testing puproses, replace with visual_cg.get_graph_dict()
+# Make sure that there are no repeated names for files, classes, functions, and raw text
 
-#This is an example graph_dict for testing puproses, replace with visual_cg.get_graph_dict()
-#Make sure that there are no repeated names for files, classes, functions, and raw text
-
-graph_dict= {
+graph_dict = {
     'file1.py': [{'Class1': [{'Function1': "def raw_text"}, {'Function2': "def raw_text2"}]}],
     'file2.py': [{'Class3': [{'Function3': "def raw_text3"}, {'Function4': "def raw_text4"}, {'Function5': "def raw_text5"}]}],
     'file3.py': [{'Class4': [{'Function6': "def raw_text6"}, {'Function7': "def raw_text7"}, {'Function8': "def raw_text8"}]}]
 }
+
 
 class Visualization_Graph():
 
@@ -24,7 +31,6 @@ class Visualization_Graph():
         self.parents_list = []
         self.graph_dict = graph_dict
 
-    
     def generate_lists(self):
         ''' Populate the names_list and parents_list attributes based on the graph_dict.
             Iterates through the graph_dict, extracting file names, class names, function names, 
@@ -81,12 +87,13 @@ class Visualization_Graph():
         '''
         fig = px.treemap(
 
-            names= self.names_list,
+            names=self.names_list,
             parents=self.parents_list
         )
         fig.update_traces(root_color="lightgrey")
         fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
         fig.show()
+
 
 visualization_graph = Visualization_Graph()
 visualization_graph.generate_lists()
@@ -95,8 +102,7 @@ visualization_graph.generate_lists()
 # print(visualization_graph.parents_list)
 
 
-
-#Exampple Treemap for testing purposes to help build children and parents list
+# Exampple Treemap for testing purposes to help build children and parents list
 # fig = px.treemap(
 
 
@@ -107,8 +113,6 @@ visualization_graph.generate_lists()
 # fig.update_traces(root_color="lightgrey")
 # fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
 # fig.show()
-
-
 
     # names=  ['file1.py', 'Class1', 'Function1', 'Function2', 'def raw_text1', 'def raw_text2'],
     # parents=['', 'file1.py', 'Class1', 'Class1', 'Function1', 'Function2']
