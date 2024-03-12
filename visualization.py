@@ -4,6 +4,7 @@ from napkin_graph import CodeBase, CodeGraph, VisualCodeGraph
 graphcastCodeBase = CodeBase(
     "GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
 graphcastGraph = CodeGraph(graphcastCodeBase)
+graphcastGraph.set_debug(False)
 graphcastGraph.populate_graph()
 # graphcastGraph.delete_small_nodes()
 graphcastGraph.populate_func_call_edges()
@@ -13,6 +14,22 @@ visualGraphCastCodeGraph = VisualCodeGraph(graphcastGraph)
 graph_dict = visualGraphCastCodeGraph.get_graph_dict()
 
 print(f"Graph Dictionary:\n{graph_dict}")
+
+"""
+The structure of graph_dict is as follows:
+dict[File, list[dict[Class, list[Function]]]]
+File, Class, and Function are Component objects
+{
+    File1: [
+        {
+            Class1: [
+                Function1,
+                Function2
+            ]
+        }
+    ],
+}
+"""
 
 # This is an example graph_dict for testing puproses, replace with visual_cg.get_graph_dict()
 # Make sure that there are no repeated names for files, classes, functions, and raw text
