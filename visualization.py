@@ -65,17 +65,17 @@ class Visualization_Graph():
                     self.parents_list.append(file)
                     # print(class_name)
                     for functions_dict in functions:
-                            # print(functions_dict)
-                            # print(functions)
-                            for functions_names, raw_texts in functions_dict.items():
-                                # print(functions_names)
-                                # print(raw_texts)
-                                self.names_list.append(functions_names)
-                                self.parents_list.append(class_name)
-                                self.names_list.append(raw_texts)
-                                self.parents_list.append(functions_names)
-    
-    #This version shows without the raw text included 
+                        # print(functions_dict)
+                        # print(functions)
+                        for functions_names, raw_texts in functions_dict.items():
+                            # print(functions_names)
+                            # print(raw_texts)
+                            self.names_list.append(functions_names)
+                            self.parents_list.append(class_name)
+                            self.names_list.append(raw_texts)
+                            self.parents_list.append(functions_names)
+
+    # This version shows without the raw text included
     # def generate_lists(self):
     #     ''' Populate the names_list and parents_list attributes based on the graph_dict.
     #         Iterates through the graph_dict, extracting file names, class names, and function names
@@ -94,9 +94,6 @@ class Visualization_Graph():
     #                     self.parents_list.append(class_name)
     #                     # print(function)
     #                     pass
-
-
-
 
     def build_graph(self):
         '''
@@ -131,9 +128,8 @@ visualization_graph.generate_lists()
 # fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
 # fig.show()
 
-    # names=  ['file1.py', 'Class1', 'Function1', 'Function2', 'def raw_text1', 'def raw_text2'],
-    # parents=['', 'file1.py', 'Class1', 'Class1', 'Function1', 'Function2']
-                    
-    # names=  ['file1.py', 'Class1', 'Function1', 'Function2', 'Class2', 'Function3', 'Function4', 'file2.py', 'Class2.1', 'Function5', 'Function6', 'Class2.2', 'Function7', 'Function8', 'file3.py', 'Class3.1', 'Function9', 'Function10', 'Class3.2', 'Function11', 'Function12']
-    # parents=['', 'file1.py', 'Class1', 'Class1', 'file1.py', 'Class2', 'Class2', '', 'file2.py', 'Class2.1', 'Class2.1', 'file2.py', 'Class2.2', 'Class2.2', '', 'file3.py', 'Class3.1', 'Class3.1', 'file3.py', 'Class3.2', 'Class3.2']
+# names=  ['file1.py', 'Class1', 'Function1', 'Function2', 'def raw_text1', 'def raw_text2'],
+# parents=['', 'file1.py', 'Class1', 'Class1', 'Function1', 'Function2']
 
+# names=  ['file1.py', 'Class1', 'Function1', 'Function2', 'Class2', 'Function3', 'Function4', 'file2.py', 'Class2.1', 'Function5', 'Function6', 'Class2.2', 'Function7', 'Function8', 'file3.py', 'Class3.1', 'Function9', 'Function10', 'Class3.2', 'Function11', 'Function12']
+# parents=['', 'file1.py', 'Class1', 'Class1', 'file1.py', 'Class2', 'Class2', '', 'file2.py', 'Class2.1', 'Class2.1', 'file2.py', 'Class2.2', 'Class2.2', '', 'file3.py', 'Class3.1', 'Class3.1', 'file3.py', 'Class3.2', 'Class3.2']
