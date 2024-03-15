@@ -112,7 +112,7 @@ class CodeBase:
         # Add all files in the subdirectories of the codebase to the list of files
         for root, dirs, files in os.walk(codebase_directory):
             for file in files:
-                if file.endswith('.py'):
+                if file.endswith('.py'):  # Only python files
                     # Construct a Component object for the file
                     f = File(name=file, path=os.path.join(root, file),
                              parent=None, children=[], raw="", dependencies=[])
@@ -138,22 +138,26 @@ class CodeBase:
         except KeyError:
             return []
 
-    def clone_repository(self, link: str, cloneDir: str = "example_codebase") -> None:
+    def clone_repository(self, link: str, cloneDir: str) -> None:
         """ Clones a repository from a link
 
         Args:
                 link (str): The link to the repository
-                cloneDir (str, optional): The directory to clone the repository to. Defaults to "example_codebase".
+                cloneDir (str, optional): The directory to clone the repository to
         """
         # Remove the existing codebase if it exists
-        if link == "" or link == None:
+        if link == "" or link == None or cloneDir == "" or cloneDir == None:
             return
+        # Remove the existing codebase if it exists
         os.system("rm -rf " + cloneDir)
         # Clone the codebase to a directory
         os.system(f"git clone {link} " + cloneDir)
-        # Delete the .git directory and other unnecessary files
+        # Delete the .git directory and other git files
         os.system("rm -rf " + cloneDir + "/.git")
         os.system("rm -rf " + cloneDir + "/.gitignore")
+        os.system("rm -rf " + cloneDir + "/.gitattributes")
+        os.system("rm -rf " + cloneDir + "/.gitmodules")
+        os.system("rm -rf " + cloneDir + "/.gitkeep")
         print(f"Cloned repository from {link} to {cloneDir}")
 
     def __repr__(self) -> str:

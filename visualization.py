@@ -35,7 +35,10 @@ class Visualization_Graph():
     def upload_repository(self, repo_name: str, repo_dir: str, repo_link: str, skip_cloning: bool = True) -> None:
         ''' Uploads the repository to be visualized and creates the graph_dict.
             Args:
-                repository (str): The repository to be visualized.
+                repo_name (str): The name of the repository. Internal name for the codebase.
+                repo_dir (str): The directory where the repository will be cloned to.
+                repo_link (str): The https link to the repository for running git clone command. Should end with .git
+                skip_cloning (bool): If True, the repository will not be cloned again and the codebase will be created from the existing directory.
         '''
         cb = CodeBase(repo_name, repo_dir, repo_link, skip_cloning)
         cg = CodeGraph(cb)
@@ -99,8 +102,10 @@ class Visualization_Graph():
 
 
 visualization_graph = Visualization_Graph()
-visualization_graph.upload_repository("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skip_cloning=True)
-# visualization_graph.upload_repository("GraphCast", "graphcast", "https://github.com/magic-research/magic-animate", skip_cloning=True)
+# visualization_graph.upload_repository(
+#     repo_name="GraphCast", repo_dir="graphcast", repo_link="https://github.com/google-deepmind/graphcast.git", skip_cloning=True)
+visualization_graph.upload_repository(
+    repo_name="IMU_RobotArm_Controller", repo_dir="imu-robotarm-control", repo_link="https://github.com/Sharwin24/IMU-RobotArm-Control.git", skip_cloning=False)
 visualization_graph.generate_lists()
 visualization_graph.build_graph()
 # print(visualization_graph)
