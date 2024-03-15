@@ -105,7 +105,7 @@ visualization_graph = Visualization_Graph()
 # visualization_graph.upload_repository(
 #     repo_name="GraphCast", repo_dir="graphcast", repo_link="https://github.com/google-deepmind/graphcast.git", skip_cloning=True)
 visualization_graph.upload_repository(
-    repo_name="IMU_RobotArm_Controller", repo_dir="imu-robotarm-control", repo_link="https://github.com/Sharwin24/IMU-RobotArm-Control.git", skip_cloning=False)
+    repo_name="IMU_RobotArm_Controller", repo_dir="imu-robotarm-control", repo_link="https://github.com/Sharwin24/IMU-RobotArm-Control.git", skip_cloning=True)
 visualization_graph.generate_lists()
 visualization_graph.build_graph()
 # print(visualization_graph)

@@ -145,9 +145,12 @@ class CodeBase:
                 link (str): The link to the repository
                 cloneDir (str, optional): The directory to clone the repository to
         """
-        # Remove the existing codebase if it exists
+        # Skip cloning if the link or cloneDir is empty or if the link doesn't end with .git
         if link == "" or link == None or cloneDir == "" or cloneDir == None:
             return
+        elif not link.endswith(".git"):
+            # If the link doesn't end with .git, add it
+            link += ".git"
         # Remove the existing codebase if it exists
         os.system("rm -rf " + cloneDir)
         # Clone the codebase to a directory
@@ -187,7 +190,7 @@ class CodeGraph:
             raise ValueError("The codebase is empty")
         self.nodes = []  # List[Component]
         self.edges = []  # List[ComponentEdge]
-        self.debug = False
+        self.debug = True
 
     def __repr__(self) -> str:
         """ Prints the graph with nodes and edges
@@ -409,14 +412,6 @@ class CodeGraph:
                 print(f"Reindexing node {node.id} to {new_id}")
             node.id = new_id
             new_id += 1
-
-    def print_nodes(self):
-        print('these are a list of all the nodes', self.nodes)
-        # for edge in self.edges:
-        # 	print('these are all the edges', edge)
-
-    def print_edges(self):
-        print('this is a list of all the edges', self.edges)
 
 
 class VisualCodeGraph():
