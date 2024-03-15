@@ -44,7 +44,7 @@ class Visualization_Graph():
         cg.reindex_nodes()
         visual_cg = VisualCodeGraph(cg)
         self.graph_dict = visual_cg.get_graph_dict()
-        # print(f"Graph Dictionary:\n{graph_dict}")
+        # print(f"Graph Dictionary:\n{self.graph_dict}")
 
     def format_raw_text(self, raw_text: str) -> str:
         ''' Formats the raw text to replace newlines with <br> tags.
@@ -99,8 +99,8 @@ class Visualization_Graph():
 
 
 visualization_graph = Visualization_Graph()
-visualization_graph.upload_repository(
-    "GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skip_cloning=True)
+visualization_graph.upload_repository("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skip_cloning=True)
+# visualization_graph.upload_repository("GraphCast", "graphcast", "https://github.com/magic-research/magic-animate", skip_cloning=True)
 visualization_graph.generate_lists()
 visualization_graph.build_graph()
 # print(visualization_graph)
