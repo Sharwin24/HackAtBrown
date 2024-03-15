@@ -431,22 +431,22 @@ class VisualCodeGraph():
 
     def _create_graph_dict(self) -> 'dict[File, list[dict[Class, list[Function]]]]':
         """ Creates a dictionary representation of the graph
-                        where keys are files and values are a list of dictionaries
-                        representing the classes and their functions
+            where keys are files and values are a list of dictionaries
+            representing the classes and their functions
 
-                        Example Output:
-                        {
-                                        'file1.py': [
-                                                        {
-                                                                        'Class1': ['Function1', 'Function2']
-                                                        },
-                                                        {
-                                                                        'Class2': ['Function3', 'Function4']
-                                                        }
-                                        ]
-                        }
+            Example Output:
+            {
+                'file1.py': [
+                                {
+                                    'Class1': ['Function1', 'Function2']
+                                },
+                                {
+                                    'Class2': ['Function3', 'Function4']
+                                }
+                ]
+            }
         Returns:
-                        dict[File, list[dict[Class, list[Function]]]]: The dictionary representation of the graph
+            dict[File, list[dict[Class, list[Function]]]]: The dictionary representation of the graph
         """
         graph_dict = {}
         nodes = self.codegraph.nodes
