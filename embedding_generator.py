@@ -55,13 +55,15 @@ class EmbeddingGenerator:
 # This file should only run once and generate the embeddings for the knowledge graph
 
 # Initialize the embedder
-embedder = Embedder("microsoft/codebert-base")
+#embedder = Embedder("microsoft/codebert-base")
+embedder = Embedder('Salesforce/SFR-Embedding-Mistral')
 
 # Directory to store the embeddings
 embeddings_dir_path = 'embeddings/'
 
 # JSON file path
-knowledge_graph_json_path = 'knowledge_graph.json'
+# knowledge_graph_json_path = 'knowledge_graph.json'
+knowledge_graph_json_path = 'PrathamResearch.json'
 
 # File to store the embeddings
 embeddings_file_path = 'vectordb.pt'

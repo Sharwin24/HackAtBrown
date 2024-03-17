@@ -1,9 +1,10 @@
 from napkin_graph import CodeBase, CodeGraph
 from rag import RetrievalAugmentedGeneration
 
-# Create CodeBase Object
-graphcastCodeBase = CodeBase("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
 
+# Create CodeBase Object
+# graphcastCodeBase = CodeBase("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
+graphcastCodeBase = CodeBase("ResearchProject", "ResearchProject", "https://github.com/PrathamRathi/ResearchProject.git", skipCloning=True)
 # Create CodeGraph Object and apply optimizations
 graphcastGraph = CodeGraph(graphcastCodeBase)
 graphcastGraph.populate_graph()
@@ -15,10 +16,11 @@ graphcastGraph.create_id_to_raw_json('graphcast.json')
 print(graphcastGraph)
 
 # Usage Example
-prompt = "what does the function _build_update_fns_for_node_types do"
+# prompt = "what does the function _build_update_fns_for_node_types do"
+prompt = "how are hexagons created"
 RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
-# print(RAG.getMostSimilarNode())
-# print(RAG.graph_walk(RAG.getMostSimilarNode()))
+print(RAG.getMostSimilarNode())
+#print(RAG.graph_walk(RAG.getMostSimilarNode()))
 
 # [NotImplementedYet] Next Step: Take similar nodes from graph_walk and 
 # paste raw text along with the prompt into LLM to generate a response

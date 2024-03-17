@@ -8,12 +8,14 @@ class RetrievalAugmentedGeneration:
 	def __init__(self, prompt: str, knowledgeGraph: CodeGraph) -> None:
 		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		print(f"Using device: {self.device}")
-		self.embeddingAgent = Embedder("microsoft/codebert-base")
+		# self.embeddingAgent = Embedder("microsoft/codebert-base")
+		self.embeddingAgent = Embedder('Salesforce/SFR-Embedding-Mistral')
 		self.codebaseEmbeddingVector = torch.load("vectordb.pt").to(self.device)
 		self.promptEmbedding = self.embeddingAgent.embed(prompt).to(self.device)
 		self.knowledgeGraph = knowledgeGraph
 		self.similarities = torch.cosine_similarity(self.codebaseEmbeddingVector, self.promptEmbedding).to(self.device)
 		print(f"{self.similarities}")
+		print("shape", self.similarities.shape)
 		self.walkThreshold = 0.9
 		self.augmentationNodesById = []
 		self.indexToNodeID, self.nodeIDToIndex = self.knowledgeGraph.create_index_to_json_dict()
