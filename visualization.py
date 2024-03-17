@@ -19,7 +19,7 @@ There are no repeated names for files, classes, functions
 """
 
 
-class Visualization_Graph():
+class KnowledgeGraphVisualizer():
 
     def __init__(self) -> None:
         self.names_list = []
@@ -101,7 +101,7 @@ class Visualization_Graph():
         fig.show()
 
 
-visualization_graph = Visualization_Graph()
+visualization_graph = KnowledgeGraphVisualizer()
 # visualization_graph.upload_repository(
 #     repo_name="GraphCast", repo_dir="graphcast", repo_link="https://github.com/google-deepmind/graphcast.git", skip_cloning=True)
 visualization_graph.upload_repository(
