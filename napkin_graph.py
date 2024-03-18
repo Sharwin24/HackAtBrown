@@ -183,14 +183,16 @@ class CodeGraph:
             Pass a complete CodeBase object to the constructor
     """
 
-    def __init__(self, codebase: CodeBase) -> None:
+    def __init__(self, codebase: CodeBase, debug: bool = True) -> None:
         self.codebase = codebase
         files = codebase.get_files()
         if not files or len(files) == 0:
             raise ValueError("The codebase is empty")
         self.nodes = []  # List[Component]
         self.edges = []  # List[ComponentEdge]
-        self.debug = True
+        self.debug = debug
+        print(
+            f"CodeGraph initialized with debug {'enabled' if debug else 'disabled'}")
 
     def __repr__(self) -> str:
         """ Prints the graph with nodes and edges

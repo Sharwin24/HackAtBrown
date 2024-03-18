@@ -2,7 +2,8 @@ from napkin_graph import CodeBase, CodeGraph
 from rag import RetrievalAugmentedGeneration
 
 # Create CodeBase Object
-graphcastCodeBase = CodeBase("GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
+graphcastCodeBase = CodeBase(
+    "GraphCast", "graphcast", "https://github.com/google-deepmind/graphcast.git", skipCloning=True)
 
 # Create CodeGraph Object and apply optimizations
 graphcastGraph = CodeGraph(graphcastCodeBase)
@@ -20,10 +21,10 @@ RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
 # print(RAG.getMostSimilarNode())
 # print(RAG.graph_walk(RAG.getMostSimilarNode()))
 
-# [NotImplementedYet] Next Step: Take similar nodes from graph_walk and 
+# [NotImplementedYet] Next Step: Take similar nodes from graph_walk and
 # paste raw text along with the prompt into LLM to generate a response
 
-# [NotImplementedYet] Next Step: Synthetic training by comparing output to 
+# [NotImplementedYet] Next Step: Synthetic training by comparing output to
 # GPT-4's response to the same prompt using the entire codebase as context
 
 # [NotImplementedYet] Next Step: Bake all of this python code into a VSCode Extension
