@@ -414,3 +414,65 @@ class CodeGraph:
                 print(f"Reindexing node {node.id} to {new_id}")
             node.id = new_id
             new_id += 1
+
+
+class VisualCodeGraph():
+    """ Class for generating visualizations of the code graph
+    """
+
+    def __init__(self, codegraph: CodeGraph) -> None:
+        self.codegraph = codegraph
+        self.graph_dict = self._create_graph_dict()
+
+    def get_graph_dict(self):
+        if self.graph_dict:
+            return self.graph_dict
+        else:
+            self.graph_dict = self._create_graph_dict()
+        return self.graph_dict
+
+    def _create_graph_dict(self) -> 'dict[File, list[dict[Class, list[Function]]]]':
+        """ Creates a dictionary representation of the graph
+            where keys are files and values are a list of dictionaries
+            representing the classes and their functions
+
+            Example Output:
+            {
+                'file1.py': [
+                                {
+                                    'Class1': ['Function1', 'Function2']
+                                },
+                                {
+                                    'Class2': ['Function3', 'Function4']
+                                }
+                ]
+            }
+        Returns:
+            dict[File, list[dict[Class, list[Function]]]]: The dictionary representation of the graph
+        """
+        graph_dict = {}
+        nodes = self.codegraph.nodes
+        for node in nodes:
+            if node.is_file():
+                # print(f"File: {node.name}")
+                file = node
+                graph_dict[file] = []
+                # Get the connected nodes
+                connected_nodes = self.codegraph.find_connected_nodes(file)
+                for connected_node in connected_nodes:
+                    if connected_node.is_class():
+                        # print(f"\tClass: {connected_node.name}")
+                        class_dict = {}
+                        class_dict[connected_node] = []
+                        # Get the connected nodes
+                        connected_nodes2 = self.codegraph.find_connected_nodes(
+                            connected_node)
+                        for connected_node2 in connected_nodes2:
+                            if connected_node2 == None:
+                                continue
+                            elif connected_node2.is_function():
+                                # print(f"\t\tFunction: {connected_node2.name}")
+                                class_dict[connected_node].append(
+                                    connected_node2)
+                        graph_dict[file].append(class_dict)
+        return graph_dict
