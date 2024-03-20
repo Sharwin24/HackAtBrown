@@ -59,7 +59,7 @@ class KnowledgeGraphVisualizer():
         raw_text = raw_text.replace('\n', '<br>')
         return raw_text.strip()
 
-    def generate_lists(self):
+    def generate_lists(self, repo_name):
         ''' Populate the names_list and parents_list attributes based on the graph_dict.
             Iterates through the graph_dict, extracting file names, class names, function names, 
             and raw text to populate names_list and their corresponding parent relationships in parents_list.
@@ -67,7 +67,7 @@ class KnowledgeGraphVisualizer():
         for file, classes in self.graph_dict.items():
             if file.name not in self.names_list:
                 self.names_list.append(file.name)
-                self.parents_list.append('')
+                self.parents_list.append(repo_name)
             for classes_dict in classes:
                 for class_obj, functions in classes_dict.items():
                     if class_obj.name not in self.names_list:
@@ -81,31 +81,31 @@ class KnowledgeGraphVisualizer():
                             self.names_list.append(formatted_raw)
                             self.parents_list.append(function.name)
 
-    def build_graph(self):
-        '''
-        Builds the treemap using the names_list and parents_list
-        '''
-        fig = px.treemap(
-            names=self.names_list,
-            parents=self.parents_list
-        )
-        fig.update_traces(
-            root_color="lightgrey",
-            marker=dict(cornerradius=5),
-            textfont=dict(size=24)
-        )
-        fig.update_layout(
-            margin=dict(t=5, l=5, r=5, b=5),
-            font=dict(size=24)
-        )
-        fig.show()
+    # def build_graph(self):
+    #     '''
+    #     Builds the treemap using the names_list and parents_list
+    #     '''
+    #     fig = px.treemap(
+    #         names=self.names_list,
+    #         parents=self.parents_list
+    #     )
+    #     fig.update_traces(
+    #         root_color="lightgrey",
+    #         marker=dict(cornerradius=5),
+    #         textfont=dict(size=24)
+    #     )
+    #     fig.update_layout(
+    #         margin=dict(t=5, l=5, r=5, b=5),
+    #         font=dict(size=24)
+    #     )
+    #     fig.show()
 
 
-visualization_graph = KnowledgeGraphVisualizer()
+# visualization_graph = KnowledgeGraphVisualizer()
 # visualization_graph.upload_repository(
 #     repo_name="GraphCast", repo_dir="graphcast", repo_link="https://github.com/google-deepmind/graphcast.git", skip_cloning=True)
-visualization_graph.upload_repository(
-    repo_name="IMU_RobotArm_Controller", repo_dir="imu-robotarm-control", repo_link="https://github.com/Sharwin24/IMU-RobotArm-Control.git", skip_cloning=True)
-visualization_graph.generate_lists()
-visualization_graph.build_graph()
+# visualization_graph.upload_repository(
+#     repo_name="IMU_RobotArm_Controller", repo_dir="imu-robotarm-control", repo_link="https://github.com/Sharwin24/IMU-RobotArm-Control.git", skip_cloning=True)
+# visualization_graph.generate_lists()
+# visualization_graph.build_graph()
 # print(visualization_graph)
