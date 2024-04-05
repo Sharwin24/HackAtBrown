@@ -45,6 +45,7 @@ class KnowledgeGraphVisualizer():
         self.repo_name = repo_name
         cb = CodeBase(repo_name, repo_dir, repo_link, skip_cloning)
         cg = CodeGraph(cb)
+        cg.set_debug(False)
         cg.populate_graph()
         cg.populate_func_call_edges()
         cg.reindex_nodes()
