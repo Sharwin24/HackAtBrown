@@ -5,18 +5,20 @@ import dash_mantine_components as dmc
 # import dash_core_components as dcc
 # import dash_html_components as html
 
+
 def create_layout():
     visualization_layout = html.Div(children=[
-        html.H1(children='Knowledge Graph Retrieval Treemap Visualization', style={'textAlign': 'center'}),
+        html.H1(children='Knowledge Graph Retrieval Treemap Visualization', style={
+                'textAlign': 'center'}),
         html.Div(style={'display': 'flex', 'justifyContent': 'center'}, children=[
             dmc.SimpleGrid(
-                cols = 2,
+                cols=2,
                 children=[
-                html.Div(dcc.Input(id="repo-name", type="text", placeholder="Github Repository Name",
-                                            style={'width': '70vh', 'fontSize': '20px'}, debounce=True)),
-                html.Div(dcc.Input(id="repo-link", type="text", placeholder="Github Repository Link", 
-                                            style={'width': '70vh', 'fontSize':'20px'},debounce=True))
-            ])
+                    html.Div(dcc.Input(id="repo-name", type="text", placeholder="Github Repository Name",
+                                       style={'width': '70vh', 'fontSize': '20px'}, debounce=True)),
+                    html.Div(dcc.Input(id="repo-link", type="text", placeholder="Github Repository Link",
+                                       style={'width': '70vh', 'fontSize': '20px'}, debounce=True))
+                ])
         ]),
         html.Div([
             dcc.Graph(

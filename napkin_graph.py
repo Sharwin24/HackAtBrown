@@ -23,7 +23,7 @@ class Component():
         self.id = next(self.id_iter)
 
     def __repr__(self) -> str:
-        return f"{self.name}"
+        return f"{self.name} ({self.get_type()})"
 
     def __hash__(self) -> int:
         return hash((self.id))
@@ -420,19 +420,29 @@ class VisualCodeGraph():
 
     def __init__(self, codegraph: CodeGraph) -> None:
         self.codegraph = codegraph
+        self.graph_dict = {}
+        # LonelyFunctions are functions directly written into a class
+        self.lonelyFunctions = {}
         self.graph_dict = self._create_graph_dict()
 
-    def get_graph_dict(self):
+    def get_graph_dict(self, print: bool = False):
         if self.graph_dict:
             return self.graph_dict
         else:
             self.graph_dict = self._create_graph_dict()
+        if print:
+            print(f"Graph Dictionary:\n\t{self.graph_dict}")
         return self.graph_dict
+
+    def get_lonely_functions(self):
+        return self.lonelyFunctions
 
     def _create_graph_dict(self) -> 'dict[File, list[dict[Class, list[Function]]]]':
         """ Creates a dictionary representation of the graph
             where keys are files and values are a list of dictionaries
             representing the classes and their functions
+
+            This function also populates self.lonelyFunctions
 
             Example Output:
             {
@@ -452,14 +462,12 @@ class VisualCodeGraph():
         nodes = self.codegraph.nodes
         for node in nodes:
             if node.is_file():
-                # print(f"File: {node.name}")
                 file = node
                 graph_dict[file] = []
                 # Get the connected nodes
                 connected_nodes = self.codegraph.find_connected_nodes(file)
                 for connected_node in connected_nodes:
                     if connected_node.is_class():
-                        # print(f"\tClass: {connected_node.name}")
                         class_dict = {}
                         class_dict[connected_node] = []
                         # Get the connected nodes
@@ -469,8 +477,11 @@ class VisualCodeGraph():
                             if connected_node2 == None:
                                 continue
                             elif connected_node2.is_function():
-                                # print(f"\t\tFunction: {connected_node2.name}")
                                 class_dict[connected_node].append(
                                     connected_node2)
                         graph_dict[file].append(class_dict)
+                    elif connected_node.is_function():
+                        print(
+                            f"Found lonely Function {connected_node.name} -> File {file.name}")
+                        self.lonelyFunctions[connected_node] = file
         return graph_dict
