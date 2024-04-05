@@ -48,7 +48,7 @@ class KnowledgeGraphVisualizer():
         cg.populate_graph()
         cg.populate_func_call_edges()
         cg.reindex_nodes()
-        print(cg)
+        # print(cg)
         visual_cg = VisualCodeGraph(cg)
         self.graph_dict = visual_cg.get_graph_dict()
         self.lonelyFunctions = visual_cg.get_lonely_functions()

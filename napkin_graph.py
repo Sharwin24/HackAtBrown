@@ -186,8 +186,8 @@ class CodeGraph:
     def __init__(self, codebase: CodeBase) -> None:
         self.codebase = codebase
         files = codebase.get_files()
-        if not files or len(files) == 0:
-            raise ValueError("The codebase is empty")
+        # if not files or len(files) == 0:
+        #     raise ValueError("fCodebase {codebase.name} has no files")
         self.nodes = []  # List[Component]
         self.edges = []  # List[ComponentEdge]
         self.debug = True
