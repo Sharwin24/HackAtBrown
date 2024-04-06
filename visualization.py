@@ -1,4 +1,3 @@
-
 import plotly.express as px
 from napkin_graph import CodeBase, CodeGraph, VisualCodeGraph
 """
@@ -121,18 +120,3 @@ class KnowledgeGraphVisualizer():
         )
         # fig.show()
         return fig
-
-# visualization_graph = KnowledgeGraphVisualizer()
-# visualization_graph.upload_repository(
-#     repo_name="GoogleGraphCast",
-#     repo_dir="graphcast",
-#     repo_link="https://github.com/google-deepmind/graphcast.git",
-#     skip_cloning=True)
-# visualization_graph.upload_repository(
-#     repo_name="IMU_RobotArm_Controller",
-#     repo_dir="imu-robotarm-control",
-#     repo_link="https://github.com/Sharwin24/IMU-RobotArm-Control.git",
-#     skip_cloning=True)
-# visualization_graph.generate_lists()
-# visualization_graph.build_graph()
-# print(visualization_graph)
