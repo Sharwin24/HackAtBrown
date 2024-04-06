@@ -154,17 +154,22 @@ class CodeBase:
         # Make sure cloneDir is in repos/
         if not cloneDir.startswith("repos/"):
             cloneDir = "repos/" + cloneDir
-        # Remove the existing codebase if it exists
-        os.system("rm -rf " + cloneDir)
-        # Clone the codebase to a directory
-        os.system(f"git clone {link} " + cloneDir)
-        # Delete the .git directory and other git files
-        os.system("rm -rf " + cloneDir + "/.git")
-        os.system("rm -rf " + cloneDir + "/.gitignore")
-        os.system("rm -rf " + cloneDir + "/.gitattributes")
-        os.system("rm -rf " + cloneDir + "/.gitmodules")
-        os.system("rm -rf " + cloneDir + "/.gitkeep")
-        print(f"Cloned repository from {link} to {cloneDir}")
+        try:
+            # Remove the existing codebase if it exists
+            os.system("rm -rf " + cloneDir)
+            # Clone the codebase to a directory
+            os.system(f"git clone {link} " + cloneDir)
+            # Delete the .git directory and other git files
+            os.system("rm -rf " + cloneDir + "/.git")
+            os.system("rm -rf " + cloneDir + "/.gitignore")
+            os.system("rm -rf " + cloneDir + "/.gitattributes")
+            os.system("rm -rf " + cloneDir + "/.gitmodules")
+            os.system("rm -rf " + cloneDir + "/.gitkeep")
+        except Exception as e:
+            print(
+                f"Error cloning repository from {link} to {cloneDir}\n Error: {e}")
+        if os.path.exists(cloneDir):
+            print(f"Cloned repository from {link} to {cloneDir}")
 
     def __repr__(self) -> str:
         """ Prints the CodeBase with files and their dependencies
