@@ -23,7 +23,7 @@ class Component():
         self.id = next(self.id_iter)
 
     def __repr__(self) -> str:
-        return f"{self.name}"
+        return f"{self.name} ({self.get_type()})"
 
     def __hash__(self) -> int:
         return hash((self.id))
@@ -107,6 +107,9 @@ class CodeBase:
         self.fileDictionary = {}  # dict[str, File] - file name to file object
         # dict[str, Function] - function name to function object
         self.funcDictionary = {}
+        # Make sure codebase_directory is in repos/
+        if not codebase_directory.startswith("repos/"):
+            codebase_directory = "repos/" + codebase_directory
         if repoLink != "" and not skipCloning:
             self.clone_repository(repoLink, codebase_directory)
         # Add all files in the subdirectories of the codebase to the list of files
@@ -151,17 +154,22 @@ class CodeBase:
         elif not link.endswith(".git"):
             # If the link doesn't end with .git, add it
             link += ".git"
-        # Remove the existing codebase if it exists
-        os.system("rm -rf " + cloneDir)
-        # Clone the codebase to a directory
-        os.system(f"git clone {link} " + cloneDir)
-        # Delete the .git directory and other git files
-        os.system("rm -rf " + cloneDir + "/.git")
-        os.system("rm -rf " + cloneDir + "/.gitignore")
-        os.system("rm -rf " + cloneDir + "/.gitattributes")
-        os.system("rm -rf " + cloneDir + "/.gitmodules")
-        os.system("rm -rf " + cloneDir + "/.gitkeep")
-        print(f"Cloned repository from {link} to {cloneDir}")
+        try:
+            # Remove the existing codebase if it exists
+            os.system("rm -rf " + cloneDir)
+            # Clone the codebase to a directory
+            os.system(f"git clone {link} " + cloneDir)
+            # Delete the .git directory and other git files
+            os.system("rm -rf " + cloneDir + "/.git")
+            os.system("rm -rf " + cloneDir + "/.gitignore")
+            os.system("rm -rf " + cloneDir + "/.gitattributes")
+            os.system("rm -rf " + cloneDir + "/.gitmodules")
+            os.system("rm -rf " + cloneDir + "/.gitkeep")
+        except Exception as e:
+            print(
+                f"Error cloning repository from {link} to {cloneDir}\n Error: {e}")
+        if os.path.exists(cloneDir):
+            print(f"Cloned repository from {link} to {cloneDir}")
 
     def __repr__(self) -> str:
         """ Prints the CodeBase with files and their dependencies
@@ -186,8 +194,8 @@ class CodeGraph:
     def __init__(self, codebase: CodeBase, debug: bool = True) -> None:
         self.codebase = codebase
         files = codebase.get_files()
-        if not files or len(files) == 0:
-            raise ValueError("The codebase is empty")
+        # if not files or len(files) == 0:
+        #     raise ValueError("fCodebase {codebase.name} has no files")
         self.nodes = []  # List[Component]
         self.edges = []  # List[ComponentEdge]
         self.debug = debug

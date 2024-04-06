@@ -1,5 +1,5 @@
 node_modules/
 .vscode/
 __pycache__/
-example_codebase/
+repos/
 key.txt
