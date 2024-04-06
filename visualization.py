@@ -33,7 +33,7 @@ class KnowledgeGraphVisualizer():
         for i in range(length):
             print(f'{self.names_list[i]} -> {self.parents_list[i]}')
 
-    def upload_repository(self, repo_name: str, repo_dir: str, repo_link: str, skip_cloning: bool = True) -> None:
+    def upload_repository(self, repo_name: str, repo_dir: str, repo_link: str, skip_cloning: bool = False) -> None:
         ''' Uploads the repository to be visualized and creates the graph_dict.
             Args:
                 repo_name (str): The name of the repository. Internal name for the codebase.

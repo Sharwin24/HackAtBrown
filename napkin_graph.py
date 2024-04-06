@@ -107,6 +107,9 @@ class CodeBase:
         self.fileDictionary = {}  # dict[str, File] - file name to file object
         # dict[str, Function] - function name to function object
         self.funcDictionary = {}
+        # Make sure codebase_directory is in repos/
+        if not codebase_directory.startswith("repos/"):
+            codebase_directory = "repos/" + codebase_directory
         if repoLink != "" and not skipCloning:
             self.clone_repository(repoLink, codebase_directory)
         # Add all files in the subdirectories of the codebase to the list of files
@@ -151,9 +154,6 @@ class CodeBase:
         elif not link.endswith(".git"):
             # If the link doesn't end with .git, add it
             link += ".git"
-        # Make sure cloneDir is in repos/
-        if not cloneDir.startswith("repos/"):
-            cloneDir = "repos/" + cloneDir
         try:
             # Remove the existing codebase if it exists
             os.system("rm -rf " + cloneDir)
