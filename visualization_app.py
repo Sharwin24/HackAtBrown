@@ -8,7 +8,7 @@ from visualization import KnowledgeGraphVisualizer
 
 def create_layout():
     visualization_layout = html.Div(children=[
-        html.H1(children='Knowledge Graph Retrieval Treemap Visualization', style={
+        html.H1(children='Knowledge Graph Treemap Visualization', style={
                 'textAlign': 'center'}),
         html.Div(style={'display': 'flex', 'justifyContent': 'center'}, children=[
             dmc.SimpleGrid(
@@ -33,35 +33,7 @@ def create_layout():
     return visualization_layout
 
 
-def Visualization_callback(app):
-    '''
-    Callback function for generating a tree-map figure based on repository name and link inputs.
-
-    Parameters:
-    - app (Dash): The Dash application instance.
-
-    Returns:
-    - function: Callback function for Dash application.
-    '''
-
-    @app.callback(
-        Output('tree-map', "figure"),
-        Input('submit-button', 'n_clicks'),
-        Input("repo-name", 'value'),
-        Input('repo-link', 'value'),
-        prevent_initial_call=True
-    )
-    def update_tree_map(n_clicks, repo_name, repo_link):
-        if repo_name and repo_link:  # Ensure both inputs are provided
-            return build_graph(repo_name, repo_link)
-        else:
-            # Return an empty figure or default figure if no inputs provided
-            return {}
-    return update_tree_map
-
-
-# Define a separate function to build the graph
-def build_graph(repo_name, repo_link):
+def visualize_repo(repo_name, repo_link):
     '''
         Builds a treemap graph based on the provided repository name and link.
 
@@ -82,30 +54,44 @@ def build_graph(repo_name, repo_link):
             skip_cloning=False
         )
         visualizer.generate_lists()
-
-        fig = px.treemap(
-            names=visualizer.names_list,
-            parents=visualizer.parents_list
-        )
-        fig.update_traces(
-            root_color="lightgrey",
-            marker=dict(cornerradius=5),
-            textfont=dict(size=24)
-        )
-        fig.update_layout(
-            margin=dict(t=5, l=5, r=5, b=5),
-            font=dict(size=24)
-        )
+        fig = visualizer.build_graph()
         # fig.show()
         # print(repo_name)
         return fig
+
+
+def visualization_callback(app):
+    '''
+    Callback function for generating a tree-map figure based on repository name and link inputs.
+
+    Parameters:
+    - app (Dash): The Dash application instance.
+
+    Returns:
+    - function: Callback function for Dash application.
+    '''
+
+    @app.callback(
+        Output('tree-map', "figure"),
+        Input('submit-button', 'n_clicks'),
+        Input("repo-name", 'value'),
+        Input('repo-link', 'value'),
+        prevent_initial_call=True
+    )
+    def update_tree_map(n_clicks, repo_name, repo_link):
+        if repo_name and repo_link:  # Ensure both inputs are provided
+            return visualize_repo(repo_name, repo_link)
+        else:
+            # Return an empty figure or default figure if no inputs provided
+            return {}
+    return update_tree_map
 
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 layout = create_layout()
 
 app.layout = layout
-Visualization_callback(app)
+visualization_callback(app)
 
 app.run_server(debug=False)
 

@@ -151,6 +151,9 @@ class CodeBase:
         elif not link.endswith(".git"):
             # If the link doesn't end with .git, add it
             link += ".git"
+        # Make sure cloneDir is in repos/
+        if not cloneDir.startswith("repos/"):
+            cloneDir = "repos/" + cloneDir
         # Remove the existing codebase if it exists
         os.system("rm -rf " + cloneDir)
         # Clone the codebase to a directory
