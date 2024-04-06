@@ -1,5 +1,5 @@
 import plotly.express as px
-from napkin_graph import CodeBase, CodeGraph
+from napkin_graph import CodeBase, CodeGraph, File, Class, Function
 """
 The structure of graph_dict is as follows:
 dict[File, list[dict[Class, list[Function]]]]
@@ -16,6 +16,7 @@ There are no repeated names for files, classes, functions
     ],
 }
 """
+
 
 class VisualCodeGraph():
     """ Class for generating visualizations of the code graph
