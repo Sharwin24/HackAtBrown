@@ -20,7 +20,7 @@ print(graphcastGraph)
 prompt = "how are hexagons created"
 RAG = RetrievalAugmentedGeneration(prompt, graphcastGraph)
 print(RAG.getMostSimilarNode())
-#print(RAG.graph_walk(RAG.getMostSimilarNode()))
+print(RAG.graph_walk(RAG.getMostSimilarNode()))
 
 # [NotImplementedYet] Next Step: Take similar nodes from graph_walk and 
 # paste raw text along with the prompt into LLM to generate a response

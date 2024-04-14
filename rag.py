@@ -23,7 +23,7 @@ class RetrievalAugmentedGeneration:
 	def getMostSimilarNode(self) -> int:
 		""" Returns the most similar node by id to the similarities vector
 		"""
-		print(f"Starting Node {torch.topk(self.similarities,5)}")
+		print(f"Starting Node {torch.topk(self.similarities,7)}")
 		
 		return torch.argmax(self.similarities).item()
 
@@ -45,6 +45,7 @@ class RetrievalAugmentedGeneration:
 		# Get neighbors and find the most similar one by cosine similarity
 		self.augmentationNodesById.append(starting_node)
 		neighbors = self.knowledgeGraph.find_connected_nodes(starting_node)
+		print('I am here in the code',neighbors)
 		neighborsById = []
 		for node in neighbors:
 			if node != None:

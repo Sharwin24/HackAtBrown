@@ -51,7 +51,7 @@ class QAGenerator:
 
   def embed_questions(self):
     questions = [q['question'] for qa in self.qa for q in qa]
-    embedder = Embedder("microsoft/codebert-base")
+    embedder = Embedder('Salesforce/SFR-Embedding-Mistral') #see if this needs to embedded
     embeddings_list = []
     for q in questions:
       # Collect embeddings
@@ -64,7 +64,7 @@ class QAGenerator:
   def embed_answers(self):
     answers = [q['answer'] for qa in self.qa for q in qa]
     
-    embedder = Embedder("microsoft/codebert-base")
+    embedder = Embedder('Salesforce/SFR-Embedding-Mistral')
     embeddings_list = []
     for a in answers:
       # Collect embeddings

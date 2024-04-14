@@ -43,7 +43,7 @@ class Embedder:
         last_hidden_states = outputs.last_hidden_state
         # Extract the embedding for the [CLS] token (the first token)
         cls_embedding = last_hidden_states[:, 0, :]
-        last_hidden_state=self.last_token_pool(last_hidden_state, inputs['attention_mask'])
+        last_hidden_state=self.last_token_pool(cls_embedding, inputs['attention_mask'])
         print(last_hidden_state.shape)
         return last_hidden_state #cls_embedding
     
