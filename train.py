@@ -11,9 +11,9 @@ from torch.utils.data import DataLoader
 """
 Computes a MultipleNegativeRankingLoss function
 Args:
-    qa_dataset
+    logits, labels
 Returns:
-    returns array of cross entropy
+    returns scalar of loss
 
 
 """
